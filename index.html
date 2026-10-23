@@ -725,7 +725,11 @@ body.is-estudio .main{margin-left:0!important;max-width:none}
 [hidden]{display:none!important}
 .xp-chips .sep{background:none!important;width:auto!important;color:var(--ink-3)}
 .est-tela{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.est-mix{object-fit:contain}
+.levar{list-style:none;margin:0;padding:0;display:grid;gap:12px}.levar li{display:flex;gap:12px;align-items:flex-start}.levar li>svg{flex:none;margin-top:2px;color:var(--ok)}.levar b{display:block;font-size:15px;font-weight:600}.levar small{font-size:13px;color:var(--ink-2)}
 .sp-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.sp-c{gap:10px}.sp-i{width:36px;height:36px;border-radius:10px;background:var(--fill-2);display:flex;align-items:center;justify-content:center;flex:none}.sp-p{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.sp-p b{font-size:15px;font-weight:600}.sp-p small{font-size:13px;color:var(--ink-2)}.sp-b{display:flex;gap:8px;flex-wrap:wrap;padding-left:46px;margin-top:-4px}.sp-t{display:flex;align-items:center;gap:14px}
+.cv-l{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto}.cv-m{align-self:flex-start;max-width:85%;background:var(--fill-2);border-radius:16px 16px 16px 4px;padding:10px 14px;display:flex;flex-direction:column;gap:4px}.cv-m span{font-size:15px;line-height:1.45;white-space:pre-line}.cv-m small{font-size:12px;color:var(--ink-2)}.cv-m.eu{align-self:flex-end;background:var(--brand);color:var(--on-brand);border-radius:16px 16px 4px 16px}.cv-m.eu small{color:var(--on-brand);opacity:.7}
+.fld textarea{width:100%;font:inherit;resize:vertical}
+.ct-anx{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px;line-height:1.5}
 .ct-doc{display:flex;flex-direction:column;gap:14px}.ct-doc p{font-size:15px;line-height:1.65;color:var(--ink)}.ct-t{font-size:17px;font-weight:700;line-height:1.35;text-transform:uppercase;letter-spacing:.01em}.ct-c h3{font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ink-2);margin-bottom:6px}.ct-c{display:flex;flex-direction:column;gap:6px}.ct-falta{background:var(--fill-2);color:var(--ink-2);border-radius:6px;padding:0 6px;font-size:13px}
 .pol-head{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--fill-2)}.pol-head img{flex:none;border-radius:50%}.pol-head b{font-size:14px;font-weight:600}.pol-head small{font-size:13px;color:var(--ink-2)}
 .sw{position:relative;flex:none;width:52px;height:32px;border-radius:16px;background:var(--fill-2);border:1px solid var(--line);transition:background .2s}
@@ -880,7 +884,7 @@ const BENEF=[{t:'Zenklub',s:'Saúde mental',auto:1,mod:['PJ','CLT']},
 function freelaDe(x){if(!x)return 0;if(x.prazoDias)return x.prazoDias;const p=x.procId?S.proc.find(y=>y.id===x.procId):null;return p&&p.prazoDias||0}
 function fimFreela(x){const n=freelaDe(x);return n&&x.inicio?new Date(new Date(x.inicio).getTime()+(n-1)*DAY):null}
 function tipoContrato(x,curto){const n=freelaDe(x);if(n)return curto?'Freela':`Freela · PJ por ${n} dias`;return x&&x.modelo==='CLT'?(curto?'CLT':'Contrato de trabalho (CLT)'):(curto?'PJ':'Prestação de serviço (PJ)')}
-function benefsDe(x){if(!x)return [];const p=x.tipo==='proc'?x:(x.procId?S.proc.find(y=>y.id===x.procId):null),mod=x.modelo||(p&&p.modelo)||'PJ',L=BENEF.filter(b=>b.mod.includes(mod));
+function benefsDe(x){if(!x||freelaDe(x))return [];const p=x.tipo==='proc'?x:(x.procId?S.proc.find(y=>y.id===x.procId):null),mod=x.modelo||(p&&p.modelo)||'PJ',L=BENEF.filter(b=>b.mod.includes(mod));
  const m=p&&p.prop&&p.prop.benef;return Array.isArray(m)?L.filter(b=>m.includes(b.t)):L}
 const AREAS=['Administrativo','Atendimento BB','BB Digital','BI e Estratégia','Conteúdo','Criação','Financeiro BB','LTM','Petrobras','Produção BB','Redes Sociais','Sebrae','Tecnologia','UX'];
 const CLIENTES=['BB Promo','BB Digital','FUNCEF','LTM','Monumenta','Petrobras','Sebrae','Transpetro'];
@@ -931,7 +935,7 @@ function novoProc(o){
   conviteEm:o.conviteEm||new Date(S.clock),iniciouEm:o.iniciouEm||null,enviadoEm:o.enviadoEm||null,validadoEm:o.validadoEm||null,
   contratoEm:o.contratoEm||null,assinadoEm:o.assinadoEm||null,acessosEm:o.acessosEm||null,correcaoEm:null,correcaoMotivo:'',
   docs:DOCS[m].map((d,i)=>({n:d,st:o.docsSt?(o.docsSt[i]||'pendente'):'pendente',arq:'',motivo:''})),
-  form:{},wz:0,prazoDias:o.prazoDias||0,acessos:{ms:false,wrike:false},cobrancas:o.cobrancas||0,tiCobrada:0,hist:[],onbId:null,
+  form:o.emailPessoal?{emailPessoal:o.emailPessoal}:{},emailPessoal:o.emailPessoal||'',wz:0,prazoDias:o.prazoDias||0,acessos:{ms:false,wrike:false},cobrancas:o.cobrancas||0,tiCobrada:0,hist:[],onbId:null,
   prop:Object.assign(propPadrao(o),o.prop||{}),pols:Object.fromEntries(POLITICAS.map(x=>[x.id,!!(o.pols&&o.pols[x.id])]))};
 }
 function novoOnb(p,o){
@@ -947,7 +951,7 @@ function novoOnb(p,o){
   chamada:o.chamada||false,videoArea:o.videoArea||false,fase:'onboarding',pulsos:o.pulsos||[],hist:[]};
 }
 function seed(){
- seq=60; S={clock:new Date(2026,9,2),proc:[],onb:[],fotos:{},funcoes:{}};
+ seq=60; S={clock:/github\.io$/.test(location.hostname)?(d=>{d.setHours(10,0,0,0);return d})(new Date()):new Date(2026,9,2),proc:[],onb:[],fotos:{},funcoes:{}};
  const mk=o=>{const p=novoProc(o);S.proc.push(p);return p};
  mk({nome:'Luiza Catunda Ferraz',modelo:'PJ',cargo:'Revisor(a) Júnior',area:'LTM',cliente:'LTM',gestor:'Roberta Ferreira',rh:'Géssica Soares',
    inicio:dt(12),prazo:dt(-1),conviteEm:dt(-4),estado:'convite_enviado'});
@@ -1006,7 +1010,7 @@ const juntaE=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' e '+a[a.length-
 /* o que está acontecendo com um cadastro, em palavras: {t, k, w} */
 function infoProc(p){
  switch(p.estado){
-  case 'proposta_enviada':{const d=desde(p.prop.enviadaEm);
+  case 'proposta_enviada':{if(p.prop.recusadaEm)return {t:'Recusou a proposta',k:'crit',w:ha(p.prop.recusadaEm)};const d=desde(p.prop.enviadaEm);
    return d>=PZ('prop')?{t:'Proposta sem resposta',k:'warn',w:ha(p.prop.enviadaEm)}:{t:p.prop.vistaEm?'Proposta aberta, sem resposta':'Proposta enviada',k:'wait',w:ha(p.prop.enviadaEm)}}
   case 'convite_enviado':{const d=desde(p.conviteEm);
    return d>=PZ('pre')?{t:'Não abriu o convite',k:'warn',w:ha(p.conviteEm)}:{t:'Convite enviado',k:'wait',w:ha(p.conviteEm)}}
@@ -1072,9 +1076,12 @@ const progressoOnb=o=>progressoDet(o).pc;
    grp: em que grupo de ação do "Hoje" ele entra; resp: quem precisa agir. */
 function alertas(){
  const A=[];
+ [...S.proc,...S.onb].forEach(x=>{const M=x.msgs||[],u=M[M.length-1];if(u&&u.de==='col')A.push({sev:'warn',grp:'travado',ref:x,t:'Mandou uma dúvida',w:ha(u.em),k:'warn',resp:x.rh,tl:`Dúvida de ${x.nome}`,sub:`“${u.txt.length>90?u.txt.slice(0,90)+'…':u.txt}”`})});
  S.proc.forEach(p=>{
   const d=desde(p.conviteEm);
-  if(p.estado==='proposta_enviada'&&desde(p.prop.enviadaEm)>=PZ('prop'))A.push({sev:'warn',grp:'cobrar',ref:p,t:'Não respondeu à proposta',w:ha(p.prop.enviadaEm),k:'warn',resp:p.rh,
+  if(p.estado==='proposta_enviada'&&p.prop.recusadaEm)A.push({sev:'crit',grp:'travado',ref:p,t:'Recusou a proposta',w:ha(p.prop.recusadaEm),k:'crit',resp:p.rh,
+   tl:`Recusou a proposta: ${p.nome}`,sub:p.prop.recusaMotivo?`“${p.prop.recusaMotivo}”`:'Sem motivo informado'});
+  else if(p.estado==='proposta_enviada'&&desde(p.prop.enviadaEm)>=PZ('prop'))A.push({sev:'warn',grp:'cobrar',ref:p,t:'Não respondeu à proposta',w:ha(p.prop.enviadaEm),k:'warn',resp:p.rh,
    tl:`Proposta sem resposta: ${p.nome}`,sub:`Enviada ${ha(p.prop.enviadaEm).toLowerCase()}${p.prop.vistaEm?' · já abriu':' · ainda não abriu'}`});
   if(p.estado==='convite_enviado'&&d>=PZ('pre'))A.push({sev:'warn',grp:'cobrar',ref:p,t:'Não abriu o convite',w:ha(p.conviteEm),k:'warn',resp:p.rh,
    tl:`Candidato sem resposta ao convite: ${p.nome}`,sub:`Convite enviado ${ha(p.conviteEm).toLowerCase()}${p.cobrancas?` · ${pl(p.cobrancas,'cobrança enviada','cobranças enviadas')}`:''}`});
@@ -1084,12 +1091,15 @@ function alertas(){
    tl:`Cadastro aguardando conferência: ${p.nome}`,sub:`Enviado ${ha(p.enviadoEm).toLowerCase()}`,soft:desde(p.enviadoEm)<=PZ('conf')});
   if(p.estado==='correcao_solicitada'&&desde(p.correcaoEm)>PZ('corr'))A.push({sev:'warn',grp:'cobrar',ref:p,t:'Não reenviou a correção',w:ha(p.correcaoEm),k:'warn',resp:p.rh,
    tl:`Correção sem retorno: ${p.nome}`,sub:p.correcaoMotivo});
-  if(p.estado==='aprovado')A.push({sev:'info',grp:'contrato',ref:p,t:'Cadastro aprovado',w:ha(p.validadoEm),k:'prog',resp:p.rh,tl:`Emitir contrato: ${p.nome}`,sub:'Documentação validada',soft:1});
+  if(p.estado==='aprovado'&&!polsOk(p)&&desde(p.validadoEm)>=2)A.push({sev:'warn',grp:'cobrar',ref:p,t:'Não aceitou as políticas',w:ha(p.validadoEm),k:'warn',resp:p.rh,tl:`Políticas antes do contrato: ${p.nome}`,sub:`${polsN(p)} de ${POLITICAS.length} aceitas`});
+  if(p.estado==='aprovado'&&polsOk(p))A.push({sev:'info',grp:'contrato',ref:p,t:'Cadastro aprovado',w:ha(p.validadoEm),k:'prog',resp:p.rh,tl:`Emitir contrato: ${p.nome}`,sub:'Documentação validada',soft:1});
   if(p.estado==='aguardando_assinatura'&&desde(p.contratoEm)>PZ('ass'))A.push({sev:'crit',grp:'cobrar',ref:p,t:'Não assinou o contrato',w:atraso(desde(p.contratoEm)-PZ('ass')),k:'crit',resp:p.rh,
    tl:`Contrato aguardando assinatura: ${p.nome}`,sub:`Enviado ${ha(p.contratoEm).toLowerCase()} · prazo de ${PZ('ass')} dias`});
   if(p.estado==='assinado'&&desde(p.assinadoEm)>=PZ('ace'))A.push({sev:'crit',grp:'acessos',ref:p,t:`Faltam ${juntaE(acessosFalta(p))}`,w:atraso(desde(p.assinadoEm)),k:'crit',resp:'TI · Projetos',
    tl:`Acessos não criados: ${p.nome}`,sub:`Contrato assinado ${ha(p.assinadoEm).toLowerCase()}`});
  });
+ S.onb.forEach(o=>{if(!COMP_ON||!o.guias)return;const F=funcaoDe(o);guiasDe(o,F).filter(g=>g&&g.pc===100&&g.g.fimEm&&desde(g.g.fimEm)<=14).forEach(g=>A.push({sev:'info',grp:'olho',ref:o,t:'Concluiu um guia de evolução',w:desde(g.g.fimEm)<1?'Hoje':'Há '+pl(desde(g.g.fimEm),'dia','dias'),k:'ok',resp:o.gestor,tag:'Evolução',
+   tl:`${o.nome} concluiu o guia: ${g.r.t}`,sub:`Hora de ${pnome(o.gestor)} conferir na próxima entrega`}))});
  S.onb.filter(o=>o.fase!=='jornada').forEach(o=>{
   const age=desde(o.inicio);
   ['d30','d60','d90'].forEach(k=>{const f=o.fb[k],dd=dias(marco(o,k)),n=k.slice(1);
@@ -1121,7 +1131,7 @@ const GRUPOS=[
  {k:'cobrar',t:'Cobrar quem não respondeu',btn:n=>n>1?`Cobrar ${n===2?'as 2':'as '+n}`:'Cobrar',lote:1},
  {k:'conferir',t:'Conferir documentos',btn:'Conferir',lote:0},
  {k:'contrato',t:'Enviar contratos',btn:n=>n>1?`Enviar os ${n}`:'Enviar contrato',lote:1},
- {k:'acessos',t:'Cobrar acessos da TI',btn:n=>n>1?`Cobrar a TI (${n})`:'Cobrar a TI',lote:1},
+ {k:'acessos',t:'Acessos pendentes (TI e Wrike)',btn:n=>n>1?`Reforçar os ${n}`:'Reforçar o pedido',lote:1},
  {k:'checklist',t:'Fechar checklists do onboarding',btn:'Abrir',lote:0}];
 function porGrupo(){
  const A=alertas(),G={};
@@ -1209,7 +1219,7 @@ function solicitarCorrecao(id){const p=S.proc.find(x=>x.id===id);
 function aprovarCadastro(id){const p=S.proc.find(x=>x.id===id);
  if(docsPend(p)){toast('Valide todos os documentos antes de aprovar.');return}
  p.estado='aprovado';p.validadoEm=new Date(S.clock);logar(p,'Cadastro aprovado');UI.open[p.id]='contrato';toast('Cadastro aprovado. Próximo passo: o contrato.');tudo()}
-function enviarContrato(id,silencio){const p=S.proc.find(x=>x.id===id);
+function enviarContrato(id,silencio){const p=S.proc.find(x=>x.id===id);if(!polsOk(p)){if(!silencio)toast('O contrato só sai depois que a pessoa aceitar as políticas.');return}
  p.estado='aguardando_assinatura';p.contratoEm=new Date(S.clock);logar(p,'Contrato enviado para assinatura pelo ZapSign');
  if(!silencio){toast(`Contrato enviado. Prazo para assinar: ${PZ('ass')} dias.`);tudo()}}
 function enviarContratoLote(ids){ids.forEach(id=>enviarContrato(id,1));toast(`${pl(ids.length,'contrato enviado','contratos enviados')}.`);tudo()}
@@ -1554,13 +1564,14 @@ function nextProc(p){const n=pnome(p.nome),i=infoProc(p),ver={t:`Ver como ${n} v
   case 'em_conferencia':return {k:i.k,t:`${n} enviou tudo. Falta conferir.`,c:`${docsVal(p)} de ${p.docs.length} documentos validados. Valide cada um ou peça correção.`,a:[{t:'Conferir documentos',go:`toggleStep('${p.id}','conf');document.getElementById('jrn').scrollIntoView({behavior:'smooth'})`},ver]};
   case 'correcao_solicitada':return {k:i.k,e:'Esperando a pessoa',t:`Esperando ${n} reenviar a correção.`,c:`${p.correcaoMotivo} Pedida ${ha(p.correcaoEm).toLowerCase()}.`,
    a:[{t:desde(p.correcaoEm)>PZ('corr')?'Cobrar por e-mail e WhatsApp':`Lembrar ${n}`,go:`cobrar('${p.id}')`,sec:desde(p.correcaoEm)<=PZ('corr')},ver]};
-  case 'aprovado':return {k:'prog',t:'Dados aprovados. Hora do contrato.',c:`${p.modelo==='PJ'?'Contrato de prestação de serviço (PJ)':'Contrato de trabalho (CLT)'}, assinado pelo ZapSign. ${n} tem ${PZ('ass')} dias para assinar.`,a:[{t:'Enviar contrato pelo ZapSign',go:`enviarContrato('${p.id}')`},ver]};
+  case 'aprovado':if(!polsOk(p))return {k:'wait',e:'Esperando a pessoa',t:`${n} precisa aceitar as políticas.`,c:`${polsN(p)} de ${POLITICAS.length} aceitas. O contrato sai com as políticas anexadas, então ele só é enviado depois disso.`,a:[{t:'Lembrar a pessoa',go:`cobrar('${p.id}')`},ver]};
+   return {k:'prog',t:'Dados e políticas ok. Hora do contrato.',c:`${p.modelo==='PJ'?'Contrato de prestação de serviço (PJ)':'Contrato de trabalho (CLT)'}, assinado pelo ZapSign. ${n} tem ${PZ('ass')} dias para assinar.`,a:[{t:'Enviar contrato pelo ZapSign',go:`enviarContrato('${p.id}')`},ver]};
   case 'aguardando_assinatura':return desde(p.contratoEm)>PZ('ass')
    ?{k:'crit',t:`${n} não assinou o contrato.`,c:`Enviado ${ha(p.contratoEm).toLowerCase()}. O prazo de ${PZ('ass')} dias passou. O início está marcado para ${fmtL(p.inicio)}.`,a:[{t:'Cobrar assinatura',go:`cobrar('${p.id}')`},{t:'Registrar assinatura',go:`marcarAssinado('${p.id}')`,sec:1},ver]}
    :{k:'wait',e:'Esperando a pessoa',t:'Contrato enviado. Esperando a assinatura.',c:`Prazo até ${fmtL(new Date(p.contratoEm.getTime()+PZ('ass')*DAY))}.`,a:[{t:'Registrar assinatura',go:`marcarAssinado('${p.id}')`,sec:1},ver]};
   case 'assinado':{const f=acessosFalta(p),k=p.acessos.ms?'wrike':'ms';
    return {k:i.k,t:`Faltam os acessos: ${juntaE(f)}.`,c:`Contrato assinado ${ha(p.assinadoEm).toLowerCase()}. A TI cria o Microsoft 365 e a Gestão de Projetos, o Wrike.${p.tiCobrada?' Pedido reforçado '+pl(p.tiCobrada,'vez','vezes')+'.':''}`,
-    a:[{t:`Marcar ${k==='ms'?'Microsoft 365':'Wrike'} como criado`,go:`criarAcesso('${p.id}','${k}')`},{t:'Cobrar a TI',go:`cobrarTI('${p.id}')`,sec:1}]}}
+    a:[p.wrikeEm?{t:`Marcar ${k==='ms'?'Microsoft 365':'Wrike'} como criado`,go:`criarAcesso('${p.id}','${k}')`}:{t:'Criar tarefa no Wrike',go:`tarefaWrike('${p.id}')`},p.wrikeEm?{t:'Ver a tarefa de novo',go:`tarefaWrike('${p.id}')`,sec:1}:{t:`Marcar ${k==='ms'?'Microsoft 365':'Wrike'} como criado`,go:`criarAcesso('${p.id}','${k}')`,sec:1}]}}
  }
  return {k:'ok',t:'Cadastro concluído.',a:[]};
 }
@@ -1583,25 +1594,27 @@ function detProc(p){
      <button type="button" class="btn" ${docsPend(p)?'disabled aria-describedby="ap-h"':''} onclick="aprovarCadastro('${p.id}')">Aprovar cadastro</button>
      <button type="button" class="btn sec" onclick="solicitarCorrecao('${p.id}')">Pedir correção</button></div>
      ${docsPend(p)?`<p class="t-note" id="ap-h">Aprovar fica disponível quando os ${p.docs.length} documentos estiverem validados.</p>`:''}`:''}`},
+  stepPoliticas(p,st),
   {k:'contrato',t:'Contrato',st:S2(3,i.k),w:st>3?'Assinado '+fmtc(p.assinadoEm):st===3?i.w:'',
    b:`<dl class="kv"><dt>Tipo</dt><dd>${esc(tipoContrato(p))}</dd><dt>Assinatura</dt><dd>ZapSign</dd>
     <dt>Enviado</dt><dd>${p.contratoEm?fmtL(p.contratoEm):'Ainda não'}</dd><dt>Prazo</dt><dd>${p.contratoEm?fmtL(new Date(p.contratoEm.getTime()+PZ('ass')*DAY)):`${PZ('ass')} dias após o envio`}</dd>
     <dt>Assinado</dt><dd>${p.assinadoEm?fmtL(p.assinadoEm):'Ainda não'}</dd></dl>
     ${st>=2?`<div><button type="button" class="btn sec" onclick="abrirContrato('${p.id}')">Ver o contrato preenchido</button></div>`:''}
-    ${p.estado==='aprovado'?`<div><button type="button" class="btn" onclick="enviarContrato('${p.id}')">Enviar pelo ZapSign</button></div>`:''}
+    ${p.estado==='aprovado'?(polsOk(p)?`<div><button type="button" class="btn" onclick="enviarContrato('${p.id}')">Enviar pelo ZapSign</button></div>`:`<p class="t-note">O contrato sai com as políticas anexadas. Falta a pessoa aceitar ${POLITICAS.length-polsN(p)} de ${POLITICAS.length}.</p>`):''}
     ${p.estado==='aguardando_assinatura'?`<div class="row-h"><button type="button" class="btn" onclick="cobrar('${p.id}')">Cobrar assinatura</button><button type="button" class="btn sec" onclick="marcarAssinado('${p.id}')">Registrar assinatura</button></div>`:''}
     ${st<3?'<p class="t-note">O contrato só pode ser emitido depois que a documentação for aprovada.</p>':''}`},
-  stepPoliticas(p,st),
   {k:'acessos',t:'Acessos',st:S2(4,i.k),w:st>4?'Prontos '+fmtc(p.acessosEm):st===4?i.w:'TI · Projetos',
    b:`<div>${[['ms','Microsoft 365','TI'],['wrike','Wrike','Gestão de Projetos']].map(([k,t,r])=>`<div class="mini"><span class="mt">${t}<small>${r}</small></span>
      ${p.acessos[k]?pill('ok','Criado'):p.assinadoEm?pill(i.k==='crit'?'crit':'prog','Pendente'):pill('lock','Depois da assinatura')}
-     ${!p.acessos[k]&&p.assinadoEm?`<button type="button" class="btn sm" onclick="criarAcesso('${p.id}','${k}')">Marcar criado</button>`:''}</div>`).join('')}</div>`},
+     ${!p.acessos[k]&&p.assinadoEm?`<button type="button" class="btn sm" onclick="criarAcesso('${p.id}','${k}')">Marcar criado</button>`:''}</div>`).join('')}</div>
+    ${p.assinadoEm&&acessosFalta(p).length?`<div class="row-h" style="gap:8px"><button type="button" class="btn sm ${p.wrikeEm?'sec':''}" onclick="tarefaWrike('${p.id}')">${p.wrikeEm?'Tarefa no Wrike criada em '+fmtc(p.wrikeEm):'Criar tarefa no Wrike'}</button></div>`:''}`},
   {k:'dia1',t:'Primeiro dia',st:'lock',w:fmtL(p.inicio),b:`<p class="t-sub">${fmtW(p.inicio).replace(/^./,c=>c.toUpperCase())}. O onboarding é criado sozinho quando os acessos ficam prontos.</p>`},
   {k:'conv',t:'Conversas de 30, 60 e 90 dias',st:'lock',w:'Gestor',b:`<p class="t-sub">Agendadas a partir do primeiro dia, com ${esc(p.gestor)}.</p>`}];
  if(UI.open[p.id]===undefined)UI.open[p.id]=steps.find(s=>s.st!=='ok'&&s.st!=='lock')?.k||null;
  const linha=`${cargoTxt(p.cargo)} · ${areaCli(p)} · ${p.modelo} · começa em ${fmtL(p.inicio)}`;
- return `${cabeca(p,linha)}<div class="stack-l" style="gap:32px">${cardNext(nextProc(p))}
+ return `${cabeca(p,linha)}<div class="stack-l" style="gap:32px">${cardNext(nextProc(p))}${conversaRH(p)}
   <section class="stack" aria-labelledby="jrn-h" id="jrn"><h3 class="t-sec" id="jrn-h">Jornada</h3><div class="jrn">${steps.map(s=>jstep(p.id,s)).join('')}</div></section>
+  ${miniTexto(p)?`<section class="stack"><div class="sec-h"><h3 class="t-sec">Minicurrículo</h3><button type="button" class="btn sm sec" onclick="copiarMini('${p.id}')">Copiar</button></div><div class="card"><p class="t-sub" style="color:var(--ink);white-space:pre-line;line-height:1.6">${esc(miniTexto(p))}</p></div></section>`:''}
   ${expectRH(p)}${quemAcompanha(p)}${historico(p)}
   <p class="t-note">Processo <span class="mono">${p.id}</span></p></div>`;
 }
@@ -1651,7 +1664,7 @@ function detOnb(o){
  if(UI.open[o.id]===undefined)UI.open[o.id]=steps.find(s=>s.st!=='ok'&&s.st!=='lock')?.k||null;
  const L={bem:['ok','Está indo bem'],ok:['wait','Mais ou menos'],dificil:['crit','Estou travado']};
  const linha=`${cargoTxt(o.cargo)} · ${areaCli(o)} · ${o.modelo} · dia ${age+1}`;
- return `${cabeca(o,linha)}<div class="stack-l" style="gap:32px">${perfilRH(o)}${cardNext(nextOnb(o))}
+ return `${cabeca(o,linha)}<div class="stack-l" style="gap:32px">${perfilRH(o)}${cardNext(nextOnb(o))}${conversaRH(o)}
   <section class="stack" aria-labelledby="jrn-h" id="jrn"><div class="sec-h"><h3 class="t-sec" id="jrn-h">Jornada</h3><span class="t-sub num">${progressoOnb(o)}% feito · nível ${nivel(xp(o)).n} na trilha</span></div>
    <div class="jrn">${steps.map(s=>jstep(o.id,s)).join('')}</div></section>
   <section class="stack" aria-labelledby="voz-h" id="voz"><h3 class="t-sec" id="voz-h">Como está sendo</h3>
@@ -1666,7 +1679,7 @@ function detOnb(o){
 /* ----- novo cadastro (folha com revisão) ----- */
 let NC=null;
 const valorNum=v=>Number(String(v||'').replace(/[^\d,]/g,'').replace(',','.'))||0;
-function novoCadastro(){NC={step:1,nome:'',cargo:'',cel:'',valor:'',modalidade:'Híbrido (sede em Brasília)',modelo:'PJ',cliente:'',area:'',gestor:'',rh:EU_RH,inicio:'',benef:[],prazoDias:0,err:{}};pintarNC()}
+function novoCadastro(){NC={step:1,nome:'',cargo:'',cel:'',valor:'',modalidade:'Híbrido (sede em Brasília)',modelo:'PJ',cliente:'',area:'',gestor:'',rh:EU_RH,inicio:'',benef:[],prazoDias:0,email:'',err:{}};pintarNC()}
 function ncBen(t,on){NC.benef=NC.benef.filter(x=>x!==t);if(on)NC.benef.push(t);if(NC.err.benef)delete NC.err.benef;const pv=$('nc-prev');if(pv)pv.innerHTML=ncPrev()}
 function nomesOrg(){if(nomesOrg.c)return nomesOrg.c;const S1=new Set();ORG.forEach(a=>pessoasOrg(a.tree).forEach(p=>S1.add(p.n)));return nomesOrg.c=[...S1].sort((a,b)=>a.localeCompare(b,'pt'))}
 function ncSet(k,v){NC[k]=k==='cel'?MASK.tel(v):k==='inicio'?MASK.date(v):v;if(NC.err[k]){delete NC.err[k]}
@@ -1677,7 +1690,7 @@ function ncPrev(){const n=pnome(NC.nome)||'[nome]',d=parseData(NC.inicio),ate=dt
   <span class="t-sub" style="color:var(--link)">monutrack.app/entrada/…</span></div>
   <dl class="kv"><dt>Contrato</dt><dd>${NC.prazoDias?`Freela · PJ por ${NC.prazoDias} dias`:NC.modelo==='PJ'?'Prestação de serviço (PJ)':'CLT'}</dd><dt>${NC.modelo==='PJ'?'Valor mensal':'Salário'}</dt><dd>${valorNum(NC.valor)?brl(valorNum(NC.valor)):'—'}</dd><dt>Benefícios</dt><dd>${L.length?L.map(b=>esc(b.t)).join(', '):'Nenhum marcado'}</dd><dt>Vale até</dt><dd>${fmtW(ate)}</dd></dl>
   ${F?`<div class="stack-s" style="gap:2px"><span class="t-note">O que vai fazer (vai na proposta)</span><p class="t-sub" style="color:var(--ink)">${esc(frases(F.desc).slice(0,2).join(' '))}</p></div>`:''}
-  <p class="t-note">Com o aceite, o cadastro abre sozinho (${DOCS[NC.modelo].length} documentos). Sem resposta em ${PZ('prop')} dias, ${esc(n)} aparece em Hoje para você cobrar.</p>`}
+  <p class="t-note">Vai por e-mail${NC.email?' para '+esc(NC.email):''}, com cópia para o gestor e o RH, e por WhatsApp. Com o aceite, o cadastro abre sozinho (${DOCS[NC.modelo].length} documentos). Sem resposta em ${PZ('prop')} dias, ${esc(n)} aparece em Hoje para você cobrar.</p>`}
 function ncField(k,l,type,extra=''){const e=NC.err[k];
  return `<div class="fld ${e?'bad':''}"><label for="nc-${k}">${l}</label><input id="nc-${k}" type="${type||'text'}" value="${esc(NC[k])}" oninput="ncSet('${k}',this.value)" ${extra} ${e?`aria-invalid="true" aria-describedby="nc-${k}-e"`:''}>${e?`<span class="err" id="nc-${k}-e">${esc(e)}</span>`:''}</div>`}
 function ncSel(k,l,ops){const e=NC.err[k];
@@ -1688,7 +1701,7 @@ function pintarNC(){
   ${sheetHead('Nova proposta','1 de 2')}
   <div class="grid2" style="gap:0;align-items:start">
    <div class="sheet-b stack">
-    <div class="fgroup">${ncField('nome','Nome completo','text','autocomplete="off" autofocus')}${ncField('cargo','Cargo')}${ncField('cel','Celular (recebe a proposta)','tel','inputmode="tel" placeholder="(21) 90000-0000"')}</div>
+    <div class="fgroup">${ncField('nome','Nome completo','text','autocomplete="off" autofocus')}${ncField('cargo','Cargo')}${ncField('cel','Celular (WhatsApp)','tel','inputmode="tel" placeholder="(21) 90000-0000"')}${ncField('email','E-mail pessoal (recebe a proposta)','email','inputmode="email" placeholder="pessoa@email.com" autocomplete="off"')}</div>
     <div class="stack-s"><span class="t-note" style="padding:0 4px">Modelo de contratação</span>
      <div class="seg" role="group" aria-label="Modelo de contratação">${[['PJ','PJ',0],['Freela','PJ',60],['CLT','CLT',0]].map(([l,m,d])=>`<button type="button" aria-pressed="${(l==='Freela')===!!NC.prazoDias&&NC.modelo===m}" onclick="NC.modelo='${m}';NC.prazoDias=${d};NC.benef=NC.benef.filter(t=>BENEF.some(b=>b.t===t&&b.mod.includes('${m}')));pintarNC()">${l}</button>`).join('')}</div>
      ${NC.prazoDias?`<div class="seg" role="group" aria-label="Duração do freela">${[30,60,90].map(d=>`<button type="button" aria-pressed="${NC.prazoDias===d}" onclick="NC.prazoDias=${d};pintarNC()">${d} dias</button>`).join('')}</div><p class="t-note" style="padding:0 4px">Freela é um contrato PJ por tempo determinado. O cadastro e os documentos são os mesmos do PJ.</p>`:''}</div>
@@ -1701,10 +1714,10 @@ function pintarNC(){
      ${ncSel('modalidade','Modalidade',['Híbrido (sede em Brasília)','Presencial (sede em Brasília)','Remoto','No cliente'])}
      <div class="fld-row ${NC.err.inicio?'bad':''}"><label for="nc-inicio" ${NC.err.inicio?'class="c-crit"':''}>Primeiro dia</label><input id="nc-inicio" inputmode="numeric" placeholder="dd/mm/aaaa" value="${esc(NC.inicio)}" oninput="ncSet('inicio',this.value)" ${NC.err.inicio?'aria-invalid="true" aria-describedby="nc-inicio-e"':''}></div>
      ${NC.err.inicio?`<span class="err fhelp c-crit" id="nc-inicio-e" style="display:block;padding:0 0 8px">${esc(NC.err.inicio)}</span>`:''}</div>
-    <div class="stack-s"><span class="t-note" style="padding:0 4px">Benefícios incluídos nesta proposta · marque um a um</span>
+    ${NC.prazoDias?`<p class="t-note" style="padding:0 4px">Freela não inclui benefícios.</p>`:`<div class="stack-s"><span class="t-note" style="padding:0 4px">Benefícios incluídos nesta proposta · marque um a um</span>
      <div class="fgroup ${NC.err.benef?'bad':''}">${BENEF.filter(b=>b.mod.includes(NC.modelo)).map((b,i)=>`<label class="check" style="padding:10px 4px" for="nc-b${i}"><input type="checkbox" id="nc-b${i}" ${NC.benef.includes(b.t)?'checked':''} onchange="ncBen('${esc(b.t)}',this.checked)"><span><b style="font-weight:500">${esc(b.t)}</b><small class="t-note" style="display:block">${esc(b.s)}</small></span></label>`).join('')}</div>
      ${NC.err.benef?`<span class="err fhelp c-crit" style="display:block;padding:0 4px">${esc(NC.err.benef)}</span>`:''}
-     <p class="t-note" style="padding:0 4px">A pessoa só vê os benefícios marcados.</p></div>
+     <p class="t-note" style="padding:0 4px">A pessoa só vê os benefícios marcados.</p></div>`}
     <p class="t-note" style="padding:0 4px">Cliente e área começam vazios para evitar engano.</p>
    </div>
    <div class="sheet-b stack"><span class="eyebrow">O que ${esc(pnome(NC.nome)||'a pessoa')} vai receber</span><div id="nc-prev" class="stack">${ncPrev()}</div>
@@ -1716,7 +1729,7 @@ function pintarNC(){
    <div class="card stack-s"><div class="row-h" style="flex-wrap:nowrap">${av(NC.nome,'')}<span class="stack-s" style="gap:0"><span class="t-body" style="font-weight:600">${esc(NC.nome)}</span><span class="t-sub">${esc(cargoTxt(NC.cargo))} · ${NC.prazoDias?'Freela '+NC.prazoDias+' dias':NC.modelo}</span></span></div>
     <div class="divider"></div>
     <dl class="kv"><dt>Cliente</dt><dd>${esc(NC.cliente)}</dd><dt>Área</dt><dd>${esc(NC.area)}</dd><dt>Gestor</dt><dd>${esc(NC.gestor||'A definir')}</dd><dt>RH</dt><dd>${esc(NC.rh)}</dd>
-    <dt>Primeiro dia</dt><dd>${fmtW(parseData(NC.inicio))}</dd><dt>${NC.modelo==='PJ'?'Valor mensal':'Salário'}</dt><dd>${brl(valorNum(NC.valor))}</dd><dt>Modalidade</dt><dd>${esc(NC.modalidade)}</dd><dt>Benefícios</dt><dd>${NC.benef.length?NC.benef.map(esc).join(', '):'Nenhum'}</dd><dt>Proposta por</dt><dd>E-mail e WhatsApp ${esc(NC.cel)}</dd></dl></div>
+    <dt>Primeiro dia</dt><dd>${fmtW(parseData(NC.inicio))}</dd><dt>${NC.modelo==='PJ'?'Valor mensal':'Salário'}</dt><dd>${brl(valorNum(NC.valor))}</dd><dt>Modalidade</dt><dd>${esc(NC.modalidade)}</dd><dt>Benefícios</dt><dd>${NC.benef.length?NC.benef.map(esc).join(', '):'Nenhum'}</dd><dt>Proposta por</dt><dd>E-mail ${esc(NC.email)}, com cópia para ${esc(NC.gestor||'o gestor')} e ${esc(NC.rh)}, e WhatsApp ${esc(NC.cel)}</dd></dl></div>
    ${ncPrev()}
   </div>
   <div class="sheet-f"><button class="btn lg block" type="button" onclick="criarProc()" autofocus>Enviar proposta</button></div></div>`;
@@ -1724,15 +1737,15 @@ function pintarNC(){
 }
 function ncRevisar(){const e={};
  if(!NC.nome.trim())e.nome='Escreva o nome completo.';if(!NC.cargo.trim())e.cargo='Escreva o cargo.';
- if(VALID.tel(NC.cel)!==true)e.cel=VALID.tel(NC.cel);
- if(!NC.cliente)e.cliente='Escolha o cliente.';if(!NC.benef.length&&BENEF.some(b=>b.mod.includes(NC.modelo)))e.benef='Marque os benefícios que entram nesta proposta.';
+ if(VALID.tel(NC.cel)!==true)e.cel=VALID.tel(NC.cel);if(VALID.email(NC.email.trim())!==true)e.email='Informe o e-mail pessoal: a proposta vai por ele.';
+ if(!NC.cliente)e.cliente='Escolha o cliente.';if(NC.prazoDias)NC.benef=[];else if(!NC.benef.length&&BENEF.some(b=>b.mod.includes(NC.modelo)))e.benef='Marque os benefícios que entram nesta proposta.';
  if(NC.gestor.trim()&&!nomesOrg().some(n=>nk(n)===nk(NC.gestor)))e.gestor='Escolha o gestor na lista, para o nome bater com o organograma.';if(!valorNum(NC.valor))e.valor='Informe o valor mensal.';if(!NC.area)e.area='Escolha a área.';
  if(!dataOk(NC.inicio))e.inicio='Use o formato dd/mm/aaaa.';else if(dias(parseData(NC.inicio))<PZ('pre')+PZ('ass'))e.inicio=`Escolha uma data a partir de ${fmtL(dt(PZ('pre')+PZ('ass')))}, para caber cadastro e assinatura.`;
  NC.err=e;if(Object.keys(e).length){pintarNC();const f=$('nc-'+Object.keys(e)[0]);if(f)f.focus();return}
  NC.step=2;pintarNC()}
 function criarProc(){
  const d=parseData(NC.inicio);
- const p=novoProc({nome:NC.nome.trim(),modelo:NC.modelo,cargo:NC.cargo.trim(),area:NC.area,cliente:NC.cliente,gestor:NC.gestor.trim()||'A definir',rh:NC.rh,celular:NC.cel,prazoDias:NC.prazoDias||0,inicio:d,prazo:dt(PZ('prop')+PZ('pre')),estado:'proposta_enviada',propEm:new Date(S.clock),
+ const p=novoProc({nome:NC.nome.trim(),modelo:NC.modelo,cargo:NC.cargo.trim(),area:NC.area,cliente:NC.cliente,gestor:NC.gestor.trim()||'A definir',rh:NC.rh,celular:NC.cel,emailPessoal:NC.email.trim(),prazoDias:NC.prazoDias||0,inicio:d,prazo:dt(PZ('prop')+PZ('pre')),estado:'proposta_enviada',propEm:new Date(S.clock),
   prop:{valor:valorNum(NC.valor),modalidade:NC.modalidade,benef:NC.benef.slice()}});
  logar(p,'Proposta oficial enviada por e-mail e WhatsApp');S.proc.unshift(p);
  $('layer').innerHTML='';NC=null;toast(`Proposta enviada para ${pnome(p.nome)}.`);
@@ -1846,6 +1859,8 @@ function numHist(){
 function vAjustes(){
  return `<div class="wrap"><div class="stack-l">
  <header class="stack-s"><h1 class="t-title">Ajustes</h1><p class="t-sub" style="max-width:62ch">Prazos que geram os pontos de atenção. Os marcados como regra oficial vieram da Monumenta e não mudam aqui.</p></header>
+ <section class="stack" aria-labelledby="aj-m"><h2 class="t-sec" id="aj-m">Minicurrículos para licitações</h2>
+  <div class="card row-h between" style="gap:12px"><span class="t-sub" style="max-width:56ch">Cada pessoa escreve o seu no cadastro. Exporte todos num arquivo de texto para a equipe de licitações.</span><button type="button" class="btn sec" onclick="exportarMinis()">Exportar minicurrículos</button></div></section>
  <section class="stack" aria-labelledby="aj-p"><h2 class="t-sec" id="aj-p">Prazos</h2>
   <div class="list">${Object.entries(PRAZOS).map(([k,p])=>`<div class="irow" style="cursor:default">
    <span class="it">${esc(p.l)}<span class="t-note" style="display:block">${p.of?'Regra oficial':'Sugestão, ajuste se precisar'}</span></span>
@@ -2234,6 +2249,9 @@ function funcaoDe(x){const c=x.cargo||'',k=chaveFun(c),of=S.funcoes&&S.funcoes[k
  if(of)return {...of,cargo:c,nivel:N,oficial:of.oficial!==false,k};
  const F=FAMILIAS.find(f=>f.re.test(c))||FAM_PAD;
  return {cargo:c,nivel:N,fam:F.t,desc:F.d+(N?' '+NIVEL_TXT[N]:''),e30:F.e[0],e60:F.e[1],e90:F.e[2],oficial:false,k}}
+/* Competências (hard e soft skills) e guias de evolução: em desenvolvimento, fora da visão do colaborador até existir a estrutura de cargos, ferramentas e níveis */
+const COMP_ON=false;
+const xpLbl=s=>COMP_ON||s<1?s+1:s;
 /* ----- formação técnica: competências por família, nível esperado e próximo nível ----- */
 /* Soft skills: outra régua, de como a pessoa se percebe. Não compara com um esperado. */
 const SOFT=[{k:'s0',t:'Comunicação',d:'Explicar ideias com clareza, ouvir e avisar o que está acontecendo'},
@@ -2326,15 +2344,15 @@ function xpDuvidas(me,F){const R=me.expResp||{},D=me.expDuv||{},out=[];
  MARCOS.forEach(([ek,,t])=>(F[ek]||[]).forEach((it,i)=>{const k=ek+'_'+i;if(R[k]==='duv')out.push({k,t,it,txt:D[k]||''})}));return out}
 function vExpect(){const x=euObj();if(!x){UI.view='eu';return vEu()}
  const o=euOnb(),me=o||x,F=funcaoDe(me),E=equipeDe(me),gest=me.gestor,R=me.expResp||{};
- const s=Math.min(UI.xs||0,5),N=6;
+ const s0=Math.min(UI.xs||0,5),s=(!COMP_ON&&s0===1)?2:s0,N=COMP_ON?6:5;
  const topo=`<button type="button" class="back" style="display:inline-flex" onclick="go('eu')">${ic('chevL',20,2.4)}Início</button>
-  <div class="tour-bar${UI.livre?' pula':''}" role="progressbar" aria-label="A nossa expectativa com você" aria-valuemin="1" aria-valuemax="${N}" aria-valuenow="${s+1}">${Array.from({length:N},(_,j)=>`<i class="${j<=s?'on':''}"${UI.livre?` onclick="xpPular(${j})" title="Ir ao passo ${j+1}"`:''}></i>`).join('')}</div>`;
+  <div class="tour-bar${UI.livre?' pula':''}" role="progressbar" aria-label="A nossa expectativa com você" aria-valuemin="1" aria-valuemax="${N}" aria-valuenow="${xpLbl(s)}">${Array.from({length:N},(_,j)=>`<i class="${j<xpLbl(s)?'on':''}"${UI.livre?` onclick="xpPular(${j})" title="Ir ao passo ${j+1}"`:''}></i>`).join('')}</div>`;
  const rasc=F.oficial?'':`<p class="t-note muted">Texto sugerido para a família ${esc(F.fam)} até o RH cadastrar a descrição oficial.</p>`;
  if(s===0){const Fr=frases(F.desc),r=Math.min(UI.xr||1,Fr.length),fim=r>=Fr.length;
   return `${topo}<header class="stack-s" style="gap:6px"><span class="eyebrow">1 de ${N} · Sua função</span><h1 class="t-title">${esc(cargoTxt(F.cargo))}</h1>
    <div class="row-h" style="gap:10px;flex-wrap:nowrap">${av(gest,'','s')}<span class="t-sub">${esc(E?E.A.label:me.area)}${F.nivel?' · nível '+F.nivel:''} · com ${esc(gest)}</span></div></header>
    <div class="xp-read">${Fr.slice(0,r).map((f,i)=>`<p class="${i===r-1?'new':''}">${esc(f)}</p>`).join('')}</div>
-   <div class="row-h" style="gap:12px;align-items:center">${fim?`<button type="button" class="btn lg" id="xp-cont" onclick="xpIr(1)">Ver sua formação técnica</button>`
+   <div class="row-h" style="gap:12px;align-items:center">${fim?`<button type="button" class="btn lg" id="xp-cont" onclick="xpIr(${COMP_ON?1:2})">${COMP_ON?'Ver sua formação técnica':'Ver o que esperamos em 30 dias'}</button>`
     :`<button type="button" class="btn lg" id="xp-cont" onclick="xpMais()">Continuar</button><span class="t-note num">${r} de ${Fr.length}</span>`}</div>${rasc}`}
  if(s===1){const R=tecDe(me,F),NT=R.length+SOFT.length,c=Math.min(UI.xc||0,NT),soft=c>=R.length&&c<NT,TS=me.soft||{};
   const cab=`<header class="stack-s" style="gap:4px"><span class="eyebrow">2 de ${N} · ${soft?'Soft skills · o seu jeito de trabalhar':c>=NT?'Sua formação':'Hard skills · o técnico da função'}</span><h1 class="t-title">${c>=NT?'Seu indicador':soft?'Como você trabalha?':'Onde você está hoje?'}</h1>
@@ -2357,7 +2375,7 @@ function vExpect(){const x=euObj();if(!x){UI.view='eu';return vEu()}
    ${c>0?`<button type="button" class="lnk" onclick="UI.xc=${c-1};tudo()">‹ Voltar à anterior</button>`:''}`}
  if(s<=4){const [ek,fk,tit]=MARCOS[s-2],L=F[ek]||[],c=Math.min(UI.xc||0,L.length),k=ek+'_'+c,dt=o?marco(o,fk):null;
   const chips=`<div class="xp-chips">${L.map((_,i)=>{const r=R[ek+'_'+i];return `<span class="${i===c?'cur':r==='ok'?'ok':r==='duv'?'duv':''}">${r==='ok'?ic('check',12,3):r==='duv'?'?':i+1}</span>`}).join('')}</div>`;
-  const cab=`<header class="stack-s" style="gap:4px"><span class="eyebrow">${s+1} de ${N} · ${tit}${dt?' · até '+fmtL(dt):''}</span><h1 class="t-title">${s===2?'Seu primeiro mês':s===3?'Pegando ritmo':'Fechando o ciclo'}</h1>
+  const cab=`<header class="stack-s" style="gap:4px"><span class="eyebrow">${xpLbl(s)} de ${N} · ${tit}${dt?' · até '+fmtL(dt):''}</span><h1 class="t-title">${s===2?'Seu primeiro mês':s===3?'Pegando ritmo':'Fechando o ciclo'}</h1>
    <p class="t-body muted">Para cada ponto, diga se faz sentido. Se gerar dúvida, ela vai para a conversa com ${esc(pnome(gest))}.</p></header>`;
   if(UI.gNovo)return `${topo}${cab}${chips}${guiaRecebido(me,F,UI.gNovo.k,UI.gNovo.o)}`;
   if(c>=L.length){const d=L.filter((_,i)=>R[ek+'_'+i]==='duv').length;
@@ -2374,7 +2392,7 @@ function vExpect(){const x=euObj();if(!x){UI.view='eu';return vEu()}
    ${c>0?`<button type="button" class="lnk" onclick="UI.xc=${c-1};UI.xduv=null;tudo()">‹ Voltar ao ponto anterior</button>`:''}`}
  const DV=tecDe(me,F).filter(r=>r.eu&&r.eu<r.esp);
  const D=xpDuvidas(me,F),tot=MARCOS.reduce((a,[ek])=>a+(F[ek]||[]).length,0),ok=Object.values(R).filter(v=>v==='ok').length;
- return `${topo}<header class="stack-s" style="gap:4px"><span class="eyebrow">6 de ${N} · Sua pauta</span><h1 class="t-title">${D.length?'Leve isto para a conversa':'Tudo claro'}</h1>
+ return `${topo}<header class="stack-s" style="gap:4px"><span class="eyebrow">${xpLbl(5)} de ${N} · Sua pauta</span><h1 class="t-title">${D.length?'Leve isto para a conversa':'Tudo claro'}</h1>
    <p class="t-body muted">${ok} de ${tot} pontos fazem sentido para você${D.length?`. ${pl(D.length,'dúvida vai','dúvidas vão')} para a conversa de 30 dias com ${esc(pnome(gest))}`:''}.</p></header>
   ${D.length?`<div class="list">${D.map(d=>`<div class="irow"><span class="xq">?</span><span class="it"><b style="font-weight:600;font-size:15px">${esc(d.it)}</b><span class="t-note" style="display:block">${esc(d.t)}${d.txt?' · “'+esc(d.txt)+'”':''}</span></span></div>`).join('')}</div>`
    :`<div class="xp-card done"><span class="art art-i">${ic('face',36,2)}</span><p class="t-sub">Nenhuma dúvida marcada. Se algo aparecer depois, fale com ${esc(pnome(gest))} ou com o RH.</p></div>`}
@@ -2392,15 +2410,15 @@ function confirmarExpect(){const o=euOnb();if(!o||o.expect)return;const D=xpDuvi
 function expectCard(x){const F=funcaoDe(x),o=x.tipo==='onb'?x:null,feito=o&&o.expect,trav=o&&!feito&&passoDe(o,'expect')&&!passoDe(o,'expect').livre;
  return `<button type="button" class="cover" onclick="${trav?`bloqueado('${o.id}','expect')`:'abrirExpect()'}">
   <span class="art art-x"><i>30</i><i>60</i><i>90</i></span>
-  <span class="cv-t"><span class="eyebrow">${feito?'Combinado':trav?'Libera em breve':'6 passos · 4 min'}</span><b>O que a Monumenta espera de você</b>
-   <span class="t-sub">${feito?'Reveja sua função e as dúvidas que você levou para a conversa.':`Sua função de ${esc(cargoTxt(F.cargo))} seu indicador técnico e os marcos de 30, 60 e 90 dias.`}</span>
+  <span class="cv-t"><span class="eyebrow">${feito?'Combinado':trav?'Libera em breve':`${COMP_ON?6:5} passos · 4 min`}</span><b>O que a Monumenta espera de você</b>
+   <span class="t-sub">${feito?'Reveja sua função e as dúvidas que você levou para a conversa.':`Sua função de ${esc(cargoTxt(F.cargo))}${COMP_ON?', seu indicador técnico':''} e os marcos de 30, 60 e 90 dias.`}</span>
    <span class="nx-m">${feito?'':`<span class="chip-n hot">+${XPW.expect} pontos</span>`}<span class="cv-go">${feito?'Rever':trav?ic('lock',14,2.4)+' Depois':'Descobrir'} ${trav?'':ic('chev',16,2.6)}</span></span></span></button>`}
 /* ----- RH: cadastrar a descrição oficial da função ----- */
 function expectRH(x){const F=funcaoDe(x),n=S.onb.concat(S.proc).filter(y=>chaveFun(y.cargo)===F.k).length;
  return `<section class="stack" aria-labelledby="xr-h"><div class="sec-h"><h3 class="t-sec" id="xr-h">Expectativa da função</h3>${F.oficial?pill('ok','Oficial'):pill('warn','Rascunho')}</div>
   <div class="card stack-s"><b class="t-body">${esc(cargoTxt(F.cargo))}</b><p class="t-sub" style="max-width:70ch">${esc(F.desc)}</p>
    <p class="t-note">${x.tipo==='onb'?(x.expect?'A pessoa combinou a expectativa em '+fmtL(x.expectEm)+'.':'A pessoa ainda não passou por esta etapa.'):'A pessoa vê esta página no portal.'} Vale para ${pl(n,'pessoa','pessoas')} com este cargo.</p>
-   ${x.tec?`<div class="stack-s"><b class="t-body">Hard skills · como a pessoa se vê</b>${tecIndicador(x,F)}</div>`:''}${x.soft?`<div class="stack-s"><b class="t-body">Soft skills · como a pessoa se percebe</b>${softIndicador(x)}</div>`:''}
+   ${COMP_ON&&x.tec?`<div class="stack-s"><b class="t-body">Hard skills · como a pessoa se vê</b>${tecIndicador(x,F)}</div>`:''}${COMP_ON&&x.soft?`<div class="stack-s"><b class="t-body">Soft skills · como a pessoa se percebe</b>${softIndicador(x)}</div>`:''}
    ${guiasDe(x,F).length?`<div class="stack-s"><b class="t-body">Guias de evolução em andamento</b>${guiasDe(x,F).map(g=>`<div class="between" style="align-items:center"><span class="t-sub" style="color:var(--ink)">${esc(g.r.t)}${g.g.ajuda?' · pediu ajuda a '+esc(pnome(g.ref)):''}</span><span class="row-h" style="gap:10px;flex-wrap:nowrap">${pbar(g.feitos,g.tot,g.r.t)}<span class="t-note num">${g.pc}%</span></span></div>`).join('')}</div>`:''}
    ${(()=>{const D=xpDuvidas(x,F);return D.length?`<div class="stack-s"><b class="t-body">Dúvidas para a conversa de 30 dias · ${D.length}</b>${D.map(d=>`<p class="t-sub" style="color:var(--ink)"><span class="xq" style="display:inline-flex;margin-right:8px">?</span>${esc(d.it)}${d.txt?` <span class="muted">· “${esc(d.txt)}”</span>`:''}</p>`).join('')}</div>`:''})()}
    <div><button type="button" class="btn sec" onclick="editarFuncao('${x.id}')">${F.oficial?'Editar descrição':'Cadastrar descrição oficial'}</button></div></div></section>`}
@@ -2426,7 +2444,7 @@ function passos(o){const P=[],va=temVA(o)&&vidArea(o.area),V=id=>VIDEOS.find(v=>
  add({et:'chegada',k:'v1',tp:'video',who:'Anderson Barros',t:'Boas-vindas do CEO',s:'Anderson Barros conta o que é a Monumenta',ok:o.videos.v1,go:`abrirVideo('v1','${o.id}')`,p:XPW.video,min:mins(V('v1').dur)});
  if(va)add({et:'chegada',k:'va',tp:'video',who:va.quem,t:'Boas-vindas da sua área',s:`${pnome(va.quem)} apresenta a área de ${o.area}`,ok:o.videoArea,go:`abrirVideo('area','${o.id}')`,p:XPW.video,min:1});
  add({et:'chegada',k:'tour',tp:'tour',t:'Tour pela sua equipe',s:'Do CEO até quem senta do seu lado',ok:o.tour,go:'abrirTour()',p:XPW.tour,min:2});
- add({et:'semana',k:'expect',tp:'expect',t:'O que a Monumenta espera de você',s:'Sua função, seu indicador técnico e os marcos de 30, 60 e 90 dias',ok:o.expect,go:'abrirExpect()',p:XPW.expect,min:4});
+ add({et:'semana',k:'expect',tp:'expect',t:'O que a Monumenta espera de você',s:COMP_ON?'Sua função, seu indicador técnico e os marcos de 30, 60 e 90 dias':'Sua função e os marcos de 30, 60 e 90 dias',ok:o.expect,go:'abrirExpect()',p:XPW.expect,min:4});
  ['v2','v3','v4'].forEach(id=>{const v=V(id);add({et:'semana',k:id,tp:'video',who:v.who==='Monumenta'?'':v.who,t:v.t,s:v.who+' · '+v.d,ok:o.videos[id],go:`abrirVideo('${id}','${o.id}')`,p:XPW.video,min:mins(v.dur),opc:!v.ob})});
  matsPara(o).forEach(m=>add({et:'semana',k:m.id,tp:'mat',t:m.t,s:m.tp+(m.ob?'':' · opcional'),ok:o.mats[m.id],go:`abrirMaterial('${m.id}','${o.id}')`,p:XPW.material,min:m.min||3,opc:!m.ob}));
  let trava=null;P.forEach((x,i)=>{x.ok=!!x.ok;x.n=i+1;x.livre=x.ok||!trava;x.antes=trava;if(!x.ok&&!x.opc&&!trava)trava=x});
@@ -2529,7 +2547,7 @@ function compPara(me,F,txt){const R=tecDe(me,F),w=s=>new Set(String(s).toLowerCa
 function abrirGuia(k){UI.guiaVolta=UI.view==='guia'?UI.guiaVolta:UI.view;UI.guia=k;UI.view='guia';UI.reav=false;tudo();focoMain()}
 function guiaMarca(tp,i){const me=euOnb()||euObj(),k=UI.guia;me.guias=me.guias||{};const g=me.guias[k]=me.guias[k]||{p:[],m:{},em:new Date(S.clock)};
  const antes=guiaDe(me,funcaoDe(me),k).pc;if(tp==='p')g.p[i]=!g.p[i];else g.m[i]=true;const G=guiaDe(me,funcaoDe(me),k);
- if(G.pc===100&&antes<100){logar(me,`Concluiu o guia de evolução: ${G.r.t}`,pnome(me.nome));celebrar('Guia concluído',`${G.r.t}: agora é hora de reavaliar onde você está.`,'Reavalie seu nível');UI.reav=true}
+ if(G.pc===100&&antes<100){G.g.fimEm=new Date(S.clock);logar(me,`Concluiu o guia de evolução: ${G.r.t}`,pnome(me.nome));celebrar('Guia concluído',`${G.r.t}: ${pnome(me.gestor)} foi avisado e vai olhar com você na próxima entrega.`,'Reavalie seu nível');UI.reav=true}
  tudo()}
 function abrirMat(i){const me=euOnb()||euObj(),G=guiaDe(me,funcaoDe(me),UI.guia),m=G.mats[i];
  if(m.pol){abrirPolitica(m.pol,me.tipo==='onb'?me.id:null);guiaMarca('m',m.id);return}
@@ -2570,7 +2588,7 @@ function guiaRecebido(me,F,k,origem){const G=guiaDe(me,F,k);if(!G)return '';
   <div class="row-h" style="gap:10px"><button type="button" class="btn" autofocus onclick="UI.gNovo=null;tudo()">Continuar</button><button type="button" class="btn sec" onclick="UI.gNovo=null;abrirGuia('${k}')">Ver o guia agora</button></div>
   <p class="t-note">O guia fica salvo no seu Perfil e no Início.</p></div>`}
 /* lista de guias (Início, Perfil, pauta) */
-function guiasLista(me,F,titulo){const L=guiasDe(me,F);if(!L.length)return '';
+function guiasLista(me,F,titulo){if(!COMP_ON)return '';const L=guiasDe(me,F);if(!L.length)return '';
  return `<section class="stack-s" aria-labelledby="gl-h"><div class="sec-h"><h2 class="t-sec" id="gl-h">${titulo||'Seus guias de evolução'}</h2><span class="t-sub num">${L.filter(g=>g.pc===100).length} de ${L.length} concluídos</span></div>
   <div class="gd-list">${L.map(g=>`<button type="button" class="gd-c" onclick="abrirGuia('${g.r.k}')">${anel(g.pc/100,56,g.pc===100?'var(--ok)':'var(--brand)',`<b style="font-size:13px">${g.pc}%</b>`)}
    <span class="stack-s" style="gap:2px;min-width:0;flex:1"><b>${esc(g.r.t)}</b><small>${TEC_NIV[g.r.eu-1]||'Dúvida marcada'} → ${TEC_NIV[g.meta-1]} · ${g.tot-g.feitos?pl(g.tot-g.feitos,'item','itens')+' para fazer':'pronto para reavaliar'}</small></span>${ic('chev',16,2.4)}</button>`).join('')}</div></section>`}
@@ -2637,15 +2655,15 @@ const _seedBase=seed;seed=function(){_seedBase();S.onb.forEach(o=>{if(o.pols.p4)
 
 /* ================================================================
    Jornada de entrada em 7 etapas:
-   Proposta → Aceite → Cadastro → Contrato → Políticas → Onboarding → 30·60·90
+   Proposta → Aceite → Cadastro → Políticas → Contrato (com as políticas anexadas) → Onboarding → 30·60·90
    (só declarações de função: a ordem no arquivo não importa)
    ================================================================ */
 function defEntrada(){return [
  {k:'proposta',t:'Proposta',i:'file',quem:'RH envia · você lê',o:'A Monumenta envia a proposta oficial: cargo, área, gestor, tipo de contrato, remuneração e os benefícios incluídos.'},
  {k:'aceite',t:'Aceite',i:'check',quem:'Você',o:`Você confirma que aceita a proposta, ou tira as dúvidas com o RH antes. A proposta vale por ${PZ('prop')+2} dias.`},
  {k:'cadastro',t:'Cadastro',i:'user',quem:'Você · RH confere',o:`Você preenche seus dados e envia os documentos (cerca de 15 minutos). O RH confere em até ${PZ('conf')} dias.`},
- {k:'contrato',t:'Contrato',i:'shield',quem:'Você assina',o:`O contrato chega pelo ZapSign. Você tem ${PZ('ass')} dias para assinar. Em seguida, a TI cria seu e-mail e o acesso ao Wrike.`},
- {k:'politicas',t:'Políticas',i:'book',quem:'Você',o:'Antes do primeiro dia, você lê e aceita as políticas da Monumenta. Cada uma tem um resumo no topo.'},
+ {k:'politicas',t:'Políticas',i:'book',quem:'Você',o:'Com o cadastro aprovado, você lê e aceita as políticas da Monumenta. Cada uma tem um resumo no topo. Elas vão anexadas ao seu contrato.'},
+ {k:'contrato',t:'Contrato',i:'shield',quem:'Você assina',o:`O contrato chega pelo ZapSign, com as políticas anexadas. Você tem ${PZ('ass')} dias para assinar. Em seguida, a TI cria seu e-mail e o acesso ao Wrike.`},
  {k:'onboarding',t:'Onboarding',i:'rocket',quem:'Você · RH · gestor',o:'Primeiro dia e primeira semana: vídeos, tour pela equipe, o que esperamos de você, materiais e o checklist com o RH.'},
  {k:'conversas',t:'30 · 60 · 90',i:'msg',quem:'Você e seu gestor',o:'Três conversas com o seu gestor, aos 30, 60 e 90 dias. Depois disso começa a Jornada.'}]}
 const polsOk=x=>POLITICAS.every(p=>x.pols&&x.pols[p.id]);
@@ -2662,15 +2680,15 @@ function etapasEntrada(x){
   st.proposta=p.estado==='proposta_enviada'&&!p.prop.vistaEm?'now':'done';
   st.aceite=p.estado!=='proposta_enviada'?'done':p.prop.vistaEm?'now':'lock';
   st.cadastro=s>=3?'done':s>=1?'now':'lock';
-  st.contrato=s>=4?'done':s===3?'now':'lock';
-  st.politicas=s>=4?(polsOk(p)?'done':'now'):'lock';
+  st.politicas=s>=4||(s===3&&polsOk(p))?'done':s===3?'now':'lock';
+  st.contrato=s>=4?'done':s===3&&polsOk(p)?'now':'lock';
   st.onboarding='lock';st.conversas='lock'}
  const sub={proposta:()=>p&&p.estado==='proposta_enviada'?(p.prop.vistaEm?'Você abriu a proposta':'Proposta enviada '+ha(p.prop.enviadaEm).toLowerCase()):'Recebida',
   aceite:()=>p&&p.prop.aceitaEm?'Aceita em '+fmtL(p.prop.aceitaEm):st.aceite==='now'?'Falta o seu aceite':'Depois da proposta',
   cadastro:()=>{if(!p||st.cadastro==='done')return 'Aprovado';const i=infoProc(p);return st.cadastro==='lock'?'Abre com o aceite':i.t},
-  contrato:()=>st.contrato==='done'?'Assinado':st.contrato==='now'?(p.estado==='aguardando_assinatura'?'Esperando a sua assinatura':'O RH está preparando'):'Depois do cadastro',
-  politicas:()=>st.politicas==='lock'?'Depois do contrato':`${polsN(o||p)} de ${POLITICAS.length} aceitas`,
-  onboarding:()=>!o?(p&&p.inicio?'Começa em '+fmtL(p.inicio):'No primeiro dia'):st.onboarding==='done'?'Concluído':st.onboarding==='lock'?'Depois das políticas':`Dia ${diaN(o)} · ${(etapasJornada(o).find(e=>e.st==='now'||e.st==='late')||{}).t||''}`,
+  contrato:()=>st.contrato==='done'?'Assinado':st.contrato==='now'?(p.estado==='aguardando_assinatura'?'Esperando a sua assinatura':'O RH está preparando'):'Depois das políticas',
+  politicas:()=>st.politicas==='lock'?'Depois do cadastro aprovado':`${polsN(o||p)} de ${POLITICAS.length} aceitas`,
+  onboarding:()=>!o?(p&&p.inicio?'Começa em '+fmtL(p.inicio):'No primeiro dia'):st.onboarding==='done'?'Concluído':st.onboarding==='lock'?'Depois do contrato':`Dia ${diaN(o)} · ${(etapasJornada(o).find(e=>e.st==='now'||e.st==='late')||{}).t||''}`,
   conversas:()=>{if(!o)return 'A partir dos 30 dias';const f=['d30','d60','d90'].filter(k=>o.fb[k].st==='ok').length;return o.fase==='jornada'?'Jornada':`${f} de 3 conversas`}};
  return D.map((d,i)=>({...d,n:i+1,st:st[d.k],sub:sub[d.k]()}))}
 function jornadaBar(x){setTimeout(()=>{const r=document.querySelector('.jb-r'),c=r&&r.querySelector('.now,.late');if(r&&c&&r.scrollWidth>r.clientWidth)r.scrollLeft=c.offsetLeft-r.clientWidth/2+32},0);const E=etapasEntrada(x),a=E.find(e=>e.st==='now'||e.st==='late')||E[E.length-1],feitas=E.filter(e=>e.st==='done').length;
@@ -2703,22 +2721,26 @@ function vProposta(){const p=euProc();if(!p){UI.view='eu';return vEu()}
   <p class="t-body muted">${ok?`Você aceitou esta proposta em ${fmtL(p.prop.aceitaEm)}.`:`Confira os detalhes com calma. A proposta vale até ${fmtL(ate)}.`}</p></header>
  <section class="pp-hero"><div class="stack-s" style="gap:4px"><span class="eyebrow">Cargo</span><b class="pp-c">${esc(cargoTxt(p.cargo))}</b><span class="t-sub" style="color:inherit;opacity:.75">${esc(E?E.A.label:p.area)} · ${esc(p.cliente)}</span></div>
   <div class="pp-v"><span class="eyebrow">${p.modelo==='PJ'?'Valor mensal do contrato':'Salário mensal'}</span><b class="num">${brl(p.prop.valor)}</b></div></section>
- ${ok?'':`<section class="card pp-aceite stack-s" style="align-items:center;text-align:center"><b class="t-body" style="font-weight:600">Tudo certo com a proposta?</b>
+ ${!ok&&p.prop.recusadaEm?`<section class="card stack-s"><b class="t-body" style="font-weight:600">Você recusou esta proposta em ${fmtL(p.prop.recusadaEm)}.</b><p class="t-sub">Obrigado por avisar. O RH já foi informado. Se mudar de ideia, é só falar com a gente.</p><div><button type="button" class="btn sec" onclick="escreverRH()">Falar com o RH</button></div></section>`:''}
+ ${ok||p.prop.recusadaEm?'':`<section class="card pp-aceite stack-s" style="align-items:center;text-align:center"><b class="t-body" style="font-weight:600">Tudo certo com a proposta?</b>
    <button type="button" class="hold" id="hold" data-ok="aceitarProposta" onpointerdown="holdIni(event)" onpointerup="holdFim()" onpointerleave="holdFim()" onpointercancel="holdFim()" onkeydown="if((event.key===' '||event.key==='Enter')&&!event.repeat){event.preventDefault();holdIni(event)}" onkeyup="if(event.key===' '||event.key==='Enter')holdFim()" oncontextmenu="return false">
     <span class="hold-f" aria-hidden="true"></span><span class="hold-t">Segure para aceitar a proposta</span></button>
-   <button type="button" class="btn sec" onclick="escreverRH()">Tenho uma dúvida antes de aceitar</button>
+   <div class="row-h" style="gap:8px;justify-content:center"><button type="button" class="btn sec" onclick="escreverRH()">Tenho uma dúvida</button><button type="button" class="btn sec" onclick="recusarProposta()">Não vou aceitar</button></div>
    <p class="t-note">Seu aceite fica registrado com data e hora. Os detalhes estão logo abaixo.</p></section>`}
  <section class="card stack-s"><h2 class="t-body" style="font-weight:600">O que você vai fazer</h2><p class="t-sub" style="color:var(--ink);line-height:1.6">${esc(resumo)}</p>${F.oficial?'':'<p class="t-note">Resumo da função. A descrição completa aparece em "O que a Monumenta espera de você", depois do aceite.</p>'}</section>
  <div class="grid2"><section class="card stack-s"><h2 class="t-body" style="font-weight:600">Como vai ser</h2><dl class="kv kv-l">
    <dt>Contrato</dt><dd>${esc(tipoContrato(p))}</dd>${freelaDe(p)?`<dt>Término</dt><dd>${fmtL(fimFreela(p))}</dd>`:''}
    <dt>Início</dt><dd>${fmtW(p.inicio)}</dd><dt>Modalidade</dt><dd>${esc(p.prop.modalidade)}</dd><dt>Jornada</dt><dd>${esc(p.prop.jornada)}</dd></dl>
    <div class="row-h" style="gap:12px;flex-wrap:nowrap;margin-top:6px">${av(p.gestor,'','s')}<span class="stack-s" style="gap:0"><b style="font-size:15px">${esc(p.gestor)}</b><small class="t-note">Seu gestor${(()=>{const I=infoOrg(nk(p.gestor||''));return I?' · '+esc(cargoOrg(I.f,I.n)):''})()}</small></span></div></section>
-  <section class="card stack-s"><h2 class="t-body" style="font-weight:600">Benefícios incluídos</h2>
+  <section class="card stack-s"><h2 class="t-body" style="font-weight:600">Benefícios incluídos</h2>${freelaDe(p)?'<p class="t-sub">Contrato de freela por tempo determinado: não inclui benefícios.</p>':''}
    <div class="pp-b">${L.map(b=>`<div><span class="mi">${ic(b.man?'cal':b.doc?'file':b.auto?'star':'gift',16,2)}</span><span class="stack-s" style="gap:0"><b>${esc(b.t)}</b><small>${esc(b.s)}</small></span></div>`).join('')}
    ${p.modelo==='CLT'?`<div><span class="mi">${ic('shield',16,2)}</span><span class="stack-s" style="gap:0"><b>Pelo vínculo CLT</b><small>FGTS, INSS, 13º salário e férias</small></span></div>`:''}</div>
    <button type="button" class="lnk" style="align-self:flex-start" onclick="abrirMaterial('m2')">Ler o manual de benefícios ›</button></section></div>
  <section class="stack-s"><h2 class="t-body" style="font-weight:600">Próximos passos</h2><ol class="jb-list">${etapasEntrada(p).slice(2).map(y=>`<li class="lock"><span class="jb-n">${y.n}</span><span><b>${y.t}</b><small>${esc(y.o)}</small></span></li>`).join('')}</ol></section>
  ${ok?`<button type="button" class="btn lg" onclick="go('meucad')">Ir para o cadastro</button>`:''}`}
+function recusarProposta(){const p=euProc();if(!p||p.estado!=='proposta_enviada')return;
+ ask({t:'Recusar a proposta',sub:'Tudo bem. Se puder, conte o motivo: ajuda o RH a melhorar as próximas propostas.',l:'Motivo (opcional)',ph:'Ex.: aceitei outra proposta, o valor não fechou, a data de início não dá',ok:'Recusar a proposta',cb:v=>{
+  p.prop.recusadaEm=new Date(S.clock);p.prop.recusaMotivo=v||'';logar(p,'Recusou a proposta'+(v?': '+v:''),pnome(p.nome));toast('Recusa registrada. O RH foi avisado.');tudo();focoMain()}})}
 function aceitarProposta(){const p=euProc();if(!p||p.estado!=='proposta_enviada')return;
  p.estado='convite_enviado';p.prop.aceitaEm=new Date(S.clock);p.conviteEm=new Date(S.clock);p.prazo=dt(PZ('pre'));
  logar(p,'Aceitou a proposta oficial',pnome(p.nome));logar(p,'Cadastro liberado no portal','Sistema');UI.view='eu';
@@ -2733,20 +2755,27 @@ function stepProposta(p){const ok=p.estado!=='proposta_enviada',i=infoProc(p),at
   b:`<dl class="kv"><dt>Contrato</dt><dd>${esc(tipoContrato(p))}</dd><dt>${p.modelo==='PJ'?'Valor mensal':'Salário'}</dt><dd>${brl(p.prop.valor)}</dd>
    <dt>Modalidade</dt><dd>${esc(p.prop.modalidade)}</dd><dt>Enviada</dt><dd>${fmtL(p.prop.enviadaEm)}</dd><dt>Aberta</dt><dd>${p.prop.vistaEm?fmtL(p.prop.vistaEm):'Ainda não'}</dd>
    <dt>${ok?'Aceita':'Vale até'}</dt><dd>${ok?fmtL(p.prop.aceitaEm):fmtL(ate)}</dd></dl>
-   ${ok?'':`<div class="row-h"><button type="button" class="btn" onclick="reenviarProposta('${p.id}')">Reenviar proposta</button><button type="button" class="btn sec" onclick="registrarAceite('${p.id}')">Registrar aceite</button></div>`}`}}
+   ${!ok&&p.prop.recusadaEm?`<p class="notice c-crit">${ic('warn',16,2.3)}<span>Recusou em ${fmtL(p.prop.recusadaEm)}${p.prop.recusaMotivo?': “'+esc(p.prop.recusaMotivo)+'”':', sem motivo informado'}.</span></p><div class="row-h"><button type="button" class="btn" onclick="novaPropostaPara('${p.id}')">Enviar nova proposta</button><button type="button" class="btn sec" onclick="encerrarProcesso('${p.id}')">Encerrar o processo</button></div>`
+   :ok?'':`<div class="row-h"><button type="button" class="btn" onclick="reenviarProposta('${p.id}')">Reenviar proposta</button><button type="button" class="btn sec" onclick="registrarAceite('${p.id}')">Registrar aceite</button></div>`}`}}
+function novaPropostaPara(id){const p=S.proc.find(x=>x.id===id);if(!p)return;
+ ask({t:'Nova proposta para '+pnome(p.nome),sub:'Ajuste o valor se mudou. O restante continua igual.',l:'Valor mensal (R$)',val:String(p.prop.valor).replace('.',','),ok:'Enviar nova proposta',cb:v=>{const n=valorNum(v);if(n)p.prop.valor=n;
+  p.prop.recusadaEm=null;p.prop.recusaMotivo='';p.prop.enviadaEm=new Date(S.clock);p.prop.vistaEm=null;logar(p,`Nova proposta enviada · ${brl(p.prop.valor)}`);toast('Nova proposta enviada.');tudo()}})}
+function encerrarProcesso(id){const p=S.proc.find(x=>x.id===id);if(!p)return;
+ ask({t:'Encerrar o processo de '+pnome(p.nome),sub:'A pessoa sai da lista de entrada.',l:'Observação (opcional)',ok:'Encerrar',cb:v=>{
+  S.encerrados=S.encerrados||[];S.encerrados.push({nome:p.nome,cargo:p.cargo,em:new Date(S.clock),motivo:p.prop.recusaMotivo||'',obs:v||''});S.proc=S.proc.filter(x=>x.id!==id);UI.sel=null;UI.showD=false;toast('Processo encerrado.');tudo()}})}
 function stepPoliticas(x,st){const n=polsN(x);
- return {k:'pols',t:'Aceite das políticas',st:polsOk(x)?'ok':st>=4?'prog':'lock',w:`${n} de ${POLITICAS.length}`,
-  b:`<div>${POLITICAS.map(P=>`<div class="mini"><span class="mt">${esc(P.t)}<small>${P.aceite?'Aceite formal · v'+P.v:'Leitura'}</small></span>${x.pols&&x.pols[P.id]?pill('ok',P.aceite?'Aceitou':'Leu'):st>=4?pill('wait','Ainda não'):pill('lock','Depois do contrato')}</div>`).join('')}</div>
+ return {k:'pols',t:'Aceite das políticas',st:polsOk(x)?'ok':st>=3?'prog':'lock',w:`${n} de ${POLITICAS.length}`,
+  b:`<div>${POLITICAS.map(P=>`<div class="mini"><span class="mt">${esc(P.t)}<small>${P.aceite?'Aceite formal · v'+P.v:'Leitura'}</small></span>${x.pols&&x.pols[P.id]?pill('ok',P.aceite?'Aceitou':'Leu'):st>=3?pill('wait','Ainda não'):pill('lock','Depois da conferência')}</div>`).join('')}</div>
    <p class="t-note">A pessoa lê e aceita no portal, entre a assinatura do contrato e o primeiro dia.</p>`}}
 /* ----- políticas antes do primeiro dia ----- */
 function aceitarPolitica(xid,pid){const x=achar(xid);if(!x)return;
  if(x.tipo==='onb'){if(!x.pols[pid])marcarConteudo(xid,'p',pid);return}
  x.pols[pid]=true;const P=POLITICAS.find(y=>y.id===pid);logar(x,`${P.aceite?'Aceitou':'Leu'}: ${P.t}`,pnome(x.nome));
- if(polsOk(x))celebrar('Políticas aceitas','Falta pouco: agora é esperar o seu primeiro dia.','Etapa 5 de 7 concluída');else toast(`${polsN(x)} de ${POLITICAS.length} políticas.`);tudo()}
+ if(polsOk(x))celebrar('Políticas aceitas',x.tipo==='proc'&&!x.assinadoEm?'Agora o RH envia o seu contrato, com as políticas anexadas, para assinar pelo ZapSign.':'Tudo certo com as políticas.','Etapa 4 de 7 concluída');else toast(`${polsN(x)} de ${POLITICAS.length} políticas.`);tudo()}
 function vPoliticasCol(){const x=euOnb()||euProc();if(!x){UI.view='eu';return vEu()}const n=polsN(x);
  return `<button type="button" class="back" style="display:inline-flex" onclick="go('eu')">${ic('chevL',20,2.4)}Início</button>
  <header class="row-h" style="gap:18px;flex-wrap:nowrap">${anel(n/POLITICAS.length,96,'var(--brand)',`<b style="font-size:24px">${n}</b><span>de ${POLITICAS.length}</span>`)}
-  <div class="stack-s" style="gap:4px"><span class="eyebrow">Etapa 5 de 7</span><h1 class="t-title">Políticas da Monumenta</h1><p class="t-body muted">${n===POLITICAS.length?'Tudo aceito. Obrigado.':'Leia e aceite antes do primeiro dia. Cada uma tem um resumo no topo.'}</p></div></header>
+  <div class="stack-s" style="gap:4px"><span class="eyebrow">Etapa 4 de 7</span><h1 class="t-title">Políticas da Monumenta</h1><p class="t-body muted">${n===POLITICAS.length?'Tudo aceito. Obrigado.':'Leia e aceite antes do contrato: elas vão anexadas a ele. Cada uma tem um resumo no topo.'}</p></div></header>
  <div class="list">${POLITICAS.map(P=>{const f=x.pols&&x.pols[P.id];return `<button type="button" class="mission" onclick="abrirPolitica('${P.id}','${x.id}')"><span class="mi">${f?dot('ok',28):ic('shield',18,2)}</span><span class="mt"><b>${esc(P.t)}</b><small>${P.aceite?'Pede aceite formal · versão '+P.v:'Leitura obrigatória'} · ${P.min} min</small></span><span class="pts">${f?(P.aceite?'Aceita':'Lida'):P.aceite?'Ler e aceitar':'Ler'}</span></button>`}).join('')}</div>
  ${POL_PEND.length?`<section class="stack-s"><h2 class="t-body" style="font-weight:600">Chegando em breve</h2><div class="list">${POL_PEND.map(P=>`<div class="mission" style="cursor:default"><span class="mi">${ic('clock',18,2)}</span><span class="mt"><b>${esc(P.t)}</b><small>O RH está finalizando o texto. Quando sair, ela aparece aqui para ler e aceitar.</small></span></div>`).join('')}</div></section>`:''}`}
 
@@ -2848,7 +2877,7 @@ const _abT=abrirTeste;abrirTeste=function(){_abT();const b=document.querySelecto
   <span class="stack-s" style="gap:2px;flex:1;min-width:0"><b style="font-weight:600">Liberar todas as etapas</b>
   <span class="t-note">Abre qualquer etapa, passo e questionário fora de ordem, sem campos obrigatórios no cadastro. Só para testes.</span></span>
   <button type="button" role="switch" aria-checked="${!!UI.livre}" aria-label="Liberar todas as etapas" class="sw ${UI.livre?'on':''}" onclick="setLivre(${!UI.livre})"><i></i></button></div>`)};
-function xpPular(s){if(UI.livre)xpIr(s)}
+function xpPular(s){if(UI.livre)xpIr(!COMP_ON&&s>=1?s+1:s)}
 
 /* RH marca como recebido um documento que chegou por fora (e-mail, WhatsApp) */
 function receberDoc(id,j,quieto){const p=S.proc.find(x=>x.id===id),d=p&&p.docs[j];if(!d)return;
@@ -2962,6 +2991,8 @@ function contratoHtml(p){const d=dadosContrato(p),C=(n,t,b)=>`<section class="ct
   ${C(11,'Da desvinculação trabalhista',P('11.1. A CONTRATADA responde pelas obrigações trabalhistas, previdenciárias e fiscais de quem emprega na prestação do serviço.'))}
   ${C(12,'Disposições gerais',P('12.1. Tolerância não é novação; alterações só valem por escrito; os títulos das cláusulas não mudam seu conteúdo.'))}
   ${C(13,'Do foro',P('13.1. Fica eleito o foro da Circunscrição Judiciária de Brasília-DF.'))}
+  <section class="ct-c"><h3>ANEXOS · POLÍTICAS INTERNAS ACEITAS</h3><p>Integram este contrato as políticas abaixo, lidas e aceitas pela CONTRATADA no portal MonuTrack:</p>
+   <ul class="ct-anx">${POLITICAS.map(P=>`<li><b>${esc(P.t)}</b> · ${esc([P.c,'versão '+P.v].filter(Boolean).join(' · '))} · ${p.pols&&p.pols[P.id]?'<span class="c-ok">aceita</span>':'<span class="ct-falta">aceite pendente</span>'}</li>`).join('')}</ul></section>
   <p class="t-note">Prévia do modelo PJ com os dados deste cadastro, para conferência. As cláusulas 4 a 12 aparecem resumidas aqui. O texto integral vai para assinatura pelo ZapSign.</p></div>`}
 function abrirContrato(id){const p=S.proc.find(x=>x.id===id)||(euProc&&euProc());if(!p)return;
  openSheet(`<div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="sheet-h"><button type="button" class="lnk l" onclick="closeSheet()">Fechar</button><h2 id="sh-t">Contrato</h2><span class="r">${p.modelo}</span></div>
@@ -2971,6 +3002,11 @@ function abrirContrato(id){const p=S.proc.find(x=>x.id===id)||(euProc&&euProc())
 /* ===== Conheça a Monumenta: sede, Mono Snack, turma da agência e suporte ===== */
 const SEDE={end:'SEPS 702/902, Conjunto B, Bloco B, 4º andar · Edifício General Alencastro',bairro:'Asa Sul, Brasília-DF · CEP 70390-025',
  mapa:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('Edifício General Alencastro, SEPS 702/902, Asa Sul, Brasília-DF')};
+const LEVAR=[['Chegue às 10h na recepção','A Cristina te recebe e leva até o seu time.'],
+ ['Documento com foto','Para o cadastro na portaria do Edifício General Alencastro.'],
+ ['Seu celular','Para ativar o e-mail da Monumenta, o Microsoft 365 e a verificação em duas etapas.'],
+ ['Fone de ouvido','Ajuda nas reuniões e nos vídeos do onboarding.'],
+ ['Dados bancários à mão','Caso o RH precise confirmar algo do cadastro.']];
 const TURMA=[{n:'Lurdinha',f:'Serviços gerais e limpeza',s:'Cuida para a sede estar sempre em ordem.'},
  {n:'Alan Goncalves',nome:'Alan Gonçalves',f:'Serviços gerais e motorista',s:'Leva e traz o que a operação precisa.'},
  {n:'Cristina Moreira',f:'Secretária',s:'Recebe quem chega, organiza salas e correspondência.'}];
@@ -2993,6 +3029,8 @@ function vMonu(){const x=euOnb()||euObj();
  <div class="grid2"><section class="card stack-s"><h2 class="t-body" style="font-weight:600">Onde fica a sede</h2><p class="t-sub" style="color:var(--ink)">${esc(SEDE.end)}<br>${esc(SEDE.bairro)}</p>
    <a class="btn sec" style="align-self:flex-start" href="${SEDE.mapa}" target="_blank" rel="noopener">Abrir no mapa</a></section>
   <section class="card stack-s"><h2 class="t-body" style="font-weight:600">Mono Snack</h2><p class="t-sub" style="color:var(--ink)">Na sede tem lanche liberado, de graça, para quem está trabalhando. É só passar na copa.</p><span class="chip-n hot" style="align-self:flex-start">Por conta da casa</span></section></div>
+ <section class="card stack-s"><h2 class="t-body" style="font-weight:600">No primeiro dia</h2>
+  <ul class="levar">${LEVAR.map(([t,d])=>`<li>${ic('check',16,2.6)}<span><b>${t}</b><small>${d}</small></span></li>`).join('')}</ul></section>
  <section class="card stack-s"><h2 class="t-body" style="font-weight:600">A sede por dentro</h2>${gravado('sede')?`<video src="${gravado('sede').url}" controls playsinline style="width:100%;border-radius:14px;background:#000"></video>`:`<div class="empty" style="padding:28px">O vídeo do tour pela sede entra aqui em breve.</div>`}</section>
  <section class="stack-s"><h2 class="t-body" style="font-weight:600">A turma da agência</h2><p class="t-sub">Quem faz a sede funcionar todo dia.</p>
   <div class="sp-g">${TURMA.map(p=>`<div class="card sp-t">${av(p.n,'','xl')}<span class="stack-s" style="gap:2px"><b class="t-body" style="font-weight:600">${esc(p.nome||p.n)}</b><span class="t-sub">${esc(p.f)}</span><small class="t-note">${esc(p.s)}</small></span></div>`).join('')}</div></section>
@@ -3058,6 +3096,57 @@ function pipPintar(){const w=TELA.pip;if(!w)return;const I=infoChave(EST.key);if
  w.document.getElementById('a').onclick=()=>estCena(-1);w.document.getElementById('p').onclick=()=>estCena(1);const x=w.document.getElementById('x');if(x)x.onclick=()=>pararGravacao()}
 function fecharPip(){if(TELA.pip){try{TELA.pip.close()}catch(e){}TELA.pip=null}}
 const _estTpT=estTp;estTp=function(){_estTpT();pipPintar()};
+/* ===== Ajustes da reunião de alinhamento (21/10) ===== */
+/* --- Conversa com o RH dentro da plataforma (dúvidas sobre a proposta e o processo) --- */
+function bolhas(M,eu){if(!M.length)return `<p class="t-sub">Nenhuma mensagem ainda. Escreva sua dúvida: a resposta aparece aqui.</p>`;
+ return `<div class="cv-l">${M.map(m=>`<div class="cv-m ${m.de===eu?'eu':''}"><span>${esc(m.txt)}</span><small>${esc(m.quem)} · ${fmtc(m.em)} ${new Date(m.em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</small></div>`).join('')}</div>`}
+function abrirConversa(){const x=euObj();if(!x)return;const rh=pnome(x.rh||'RH');
+ openSheet(`<form class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t" onsubmit="event.preventDefault();mandarMsg('col')">
+  <div class="sheet-h"><button type="button" class="lnk l" onclick="closeSheet()">Fechar</button><h2 id="sh-t">Conversa com ${esc(rh)}</h2><span class="r"></span></div>
+  <div class="sheet-b stack"><p class="t-sub">Dúvidas sobre a proposta, o cadastro ou o contrato. ${esc(rh)} responde por aqui, e você recebe o aviso no e-mail.</p>
+   <div id="cv-th">${bolhas(x.msgs||[],'col')}</div>
+   <div class="fld"><label for="cv-txt">Sua mensagem</label><textarea id="cv-txt" rows="3" placeholder="Escreva sua dúvida" required></textarea></div></div>
+  <div class="sheet-f"><button class="btn lg block" type="submit">Enviar</button></div></form>`);
+ setTimeout(()=>{const t=$('cv-txt');if(t)t.focus()},50)}
+function mandarMsg(de,id){const x=de==='col'?euObj():achar(id);if(!x)return;const t=$(de==='col'?'cv-txt':'cvr-'+id),v=t&&t.value.trim();if(!v){if(t)t.focus();return}
+ x.msgs=x.msgs||[];x.msgs.push({de,quem:de==='col'?pnome(x.nome):pnome(EU_RH),txt:v,em:new Date()});
+ logar(x,de==='col'?'Mandou uma dúvida pela plataforma':'RH respondeu a dúvida pela plataforma',de==='col'?pnome(x.nome):EU_RH);
+ if(de==='col'){t.value='';const th=$('cv-th');if(th)th.innerHTML=bolhas(x.msgs,'col');toast('Enviado. O RH responde por aqui.');enviar()}
+ else{toast(`Resposta enviada para ${pnome(x.nome)}.`);tudo()}}
+function conversaRH(x){const M=x.msgs||[];if(!M.length)return '';const u=M[M.length-1];
+ return `<section class="stack" aria-labelledby="cv-h-${x.id}"><div class="sec-h"><h3 class="t-sec" id="cv-h-${x.id}">Conversa</h3>${u.de==='col'?pill('warn','Esperando resposta'):pill('ok','Respondida')}</div>
+  <div class="card stack">${bolhas(M,'rh')}
+   <div class="fld"><label for="cvr-${x.id}">Responder a ${esc(pnome(x.nome))}</label><textarea id="cvr-${x.id}" rows="2" placeholder="Sua resposta"></textarea></div>
+   <div><button type="button" class="btn" onclick="mandarMsg('rh','${x.id}')">Enviar resposta</button></div></div></section>`}
+
+/* --- Antes de assinar o contrato, a pessoa ainda não vê o conteúdo do onboarding --- */
+function liberadoOnb(){const x=euObj();if(!x)return false;if(UI.livre)return true;return x.tipo==='onb'||!!x.assinadoEm}
+['vEquipe','vOrg','vExpect','vMonu'].forEach(n=>{const f=window[n];if(typeof f!=='function')return;window[n]=function(){if(!liberadoOnb()){UI.view='eu';toast('Esta parte abre depois da assinatura do contrato.');return vEu()}return f.apply(this,arguments)}});
+
+/* --- Minicurrículo para licitações: escrito pela própria pessoa --- */
+const MINI_AJUDA='Em 5 a 8 linhas, na terceira pessoa: formação, anos de experiência, clientes ou projetos principais, ferramentas que domina e certificações. Ex.: "Designer gráfica formada pela UnB, com 6 anos de experiência em campanhas para o setor público..."';
+function miniTexto(p){return (p.form&&p.form.miniCV||'').trim()}
+function copiarMini(id){const p=achar(id);if(!p)return;copiarTexto(`${p.form.nomeCompleto||p.nome} · ${cargoTxt(p.cargo)}\n${miniTexto(p)}`,'Minicurrículo copiado.')}
+async function exportarMinis(){const L=[...S.proc,...S.onb].map(x=>x.tipo==='onb'&&x.procId?S.proc.find(p=>p.id===x.procId)||x:x).filter((x,i,a)=>x.form&&miniTexto(x)&&a.indexOf(x)===i);
+ if(!L.length){toast('Ainda não há minicurrículos preenchidos.');return}
+ const txt=L.map(p=>`${p.form.nomeCompleto||p.nome}\n${cargoTxt(p.cargo)} · ${areaCli(p)}\n\n${miniTexto(p)}`).join('\n\n----------\n\n');
+ const blob=new Blob([txt],{type:'text/plain;charset=utf-8'}),nome='minicurriculos-monumenta.txt';
+ try{const d=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(d){await d.save({filename:nome,data:blob});return}}catch(e){}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nome;document.body.appendChild(a);a.click();a.remove()}
+
+/* --- Acessos: tarefa no Wrike com o texto pronto (a criação automática pela API fica para a versão real) --- */
+function tarefaWrike(id){const p=S.proc.find(x=>x.id===id);if(!p)return;const f=acessosFalta(p);
+ const tit=`Acessos de ${p.nome} · ${cargoTxt(p.cargo)} · início ${fmtL(p.inicio)}`;
+ const desc=`Pessoa: ${p.form.nomeCompleto||p.nome}\nCargo: ${cargoTxt(p.cargo)} · ${areaCli(p)}\nGestor: ${p.gestor}\nPrimeiro dia: ${fmtW(p.inicio)}\nE-mail pessoal: ${p.emailPessoal||p.form.emailPessoal||'—'}\n\nCriar:\n${f.map(a=>'- '+a).join('\n')}\n\nResponsáveis: suporte técnico (Gislei e Fernando Lucius) para o Microsoft 365 e a Gestão de Projetos para o Wrike.\nAvisar o RH quando estiver pronto.`;
+ LK={url:'',msg:tit+'\n\n'+desc};
+ openSheet(`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="sheet-h"><button type="button" class="lnk l" onclick="closeSheet()">Fechar</button><h2 id="sh-t">Tarefa no Wrike</h2><span class="r"></span></div>
+  <div class="sheet-b stack"><p class="t-sub">Copie e crie a tarefa no Wrike, na pasta de acessos. Na versão final, o MonuTrack cria a tarefa sozinho pela integração.</p>
+   <div class="fgroup"><div class="fld"><label for="wk-t">Título</label><input id="wk-t" value="${esc(tit)}" readonly></div><div class="fld"><label for="wk-d">Descrição</label><textarea id="wk-d" rows="10" readonly>${esc(desc)}</textarea></div></div>
+   <div class="row-h" style="gap:8px"><button type="button" class="btn" onclick="copiarTexto(LK.msg,'Tarefa copiada. Cole no Wrike.')">Copiar tarefa</button><button type="button" class="btn sec" onclick="closeSheet();wrikeCriada('${p.id}')">Já criei no Wrike</button></div></div></div>`)}
+function wrikeCriada(id){const p=S.proc.find(x=>x.id===id);if(!p)return;p.tiCobrada++;p.wrikeEm=new Date(S.clock);logar(p,`Tarefa de acessos criada no Wrike: ${juntaE(acessosFalta(p))}`);toast('Tarefa registrada. Agora é marcar os acessos quando ficarem prontos.');tudo()}
+
+/* --- Dados de exemplo coerentes com a nova ordem: quem já tem contrato enviado aceitou as políticas --- */
+const _seed19=seed;seed=function(){_seed19();S.proc.forEach(p=>{if(['aguardando_assinatura','assinado','concluido'].includes(p.estado))POLITICAS.forEach(x=>{p.pols[x.id]=true})})};
 
 /* ================================================================
    Colaborador
@@ -3074,8 +3163,7 @@ function contato(x){const rh=x.rh||'Géssica Soares';
  return `<div class="card pad-s row-h" style="flex-wrap:nowrap">${av(rh,'')}
   <span class="stack-s" style="gap:0;flex:1;min-width:0"><span class="t-body" style="font-weight:500">Dúvida? Fale com ${esc(pnome(rh))}</span><span class="t-note">Sua pessoa no RH</span></span>
   <button type="button" class="icon-btn" onclick="escreverRH()" aria-label="Escrever para ${esc(pnome(rh))}">${ic('msg',18,2)}</button></div>`}
-function escreverRH(){const x=euObj(),rh=(x&&x.rh)||'RH';
- ask({t:`Escrever para ${pnome(rh)}`,l:'Sua mensagem',ph:'Escreva sua dúvida',ok:'Enviar',req:1,cb:v=>{logar(x,`Mensagem para o RH: ${v}`,pnome(x.nome));toast(`Enviado. ${pnome(rh)} responde por aqui.`);tudo()}})}
+function escreverRH(){abrirConversa()}
 function diaUmCard(x,inicio){const AG=[['10h','Boas-vindas com o RH e seu gestor'],['11h30','Equipamento e acessos com a TI'],['15h','Café com o time da área']];
  return `<section class="stack-s" aria-labelledby="d1-h"><h2 class="t-body" style="font-weight:600" id="d1-h">Seu primeiro dia</h2>
   <div class="hero-day"><div class="hd"><b class="num">${inicio.getDate()}</b><span class="t-body" style="font-weight:500">${SEM[inicio.getDay()].replace('-feira','')}, ${MES[inicio.getMonth()]}</span></div>
@@ -3103,10 +3191,10 @@ function vEuCadastro(p,nome){
   case 'em_preenchimento':agora={t:'Continuar seu cadastro',c:`Passo ${p.wz+1} de ${passos}. ${docsEnv(p)} de ${p.docs.length} documentos enviados.`,b:'Continuar',go:`go('meucad')`};break;
   case 'correcao_solicitada':agora={t:'Corrigir um item do cadastro',c:p.correcaoMotivo,b:'Corrigir agora',go:`go('meucad')`,k:'warn'};break;
   case 'em_conferencia':agora={t:'Tudo enviado.',c:`${pnome(p.rh)} está conferindo seus dados e documentos. Você recebe um aviso quando terminar.`,k:'wait'};break;
-  case 'aprovado':agora={t:'Seus dados foram aprovados.',c:'O contrato chega por e-mail, para assinar pelo ZapSign.',k:'wait'};break;
+  case 'aprovado':agora=polsOk(p)?{t:'Políticas aceitas. Agora é o contrato.',c:'O RH envia o contrato pelo ZapSign, com as políticas anexadas.',k:'wait'}
+   :{t:'Aceitar as políticas da Monumenta',c:`Seus dados foram aprovados. ${polsN(p)} de ${POLITICAS.length} políticas aceitas. Elas vão anexadas ao seu contrato, que chega logo depois.`,b:'Ler e aceitar',go:"UI.view='politicas';tudo();focoMain()"};break;
   case 'aguardando_assinatura':agora={t:'Assinar o contrato',c:`${p.modelo==='PJ'?'Contrato de prestação de serviço':'Contrato de trabalho'}, pelo ZapSign. Prazo até ${fmtL(new Date(p.contratoEm.getTime()+PZ('ass')*DAY))}.`,b:'Assinar',go:`assinarContrato('${p.id}')`};break;
-  case 'assinado':agora=polsOk(p)?{t:'Tudo pronto do seu lado.',c:'A TI está criando seu e-mail da Monumenta e o acesso ao Wrike. Agora é esperar o primeiro dia.',k:'ok'}
-   :{t:'Aceitar as políticas da Monumenta',c:`${polsN(p)} de ${POLITICAS.length} aceitas. Contrato assinado: falta só isto antes do primeiro dia. Enquanto isso, a TI cria seus acessos.`,b:'Ler e aceitar',go:"UI.view='politicas';tudo();focoMain()"};break;
+  case 'assinado':agora={t:'Tudo pronto do seu lado.',c:'A TI está criando seu e-mail da Monumenta e o acesso ao Wrike. Agora é esperar o primeiro dia.',k:'ok'};break;
  }
  const depois=[];
  const pc=Math.min(1,st/5);
@@ -3119,9 +3207,9 @@ function vEuCadastro(p,nome){
   ${agora.b?`<button type="button" class="btn lg block" onclick="${agora.go}">${agora.b}</button>`:''}
   ${venc?`<p class="notice c-warn t-note">${ic('warn',15,2.3)}<span>O prazo era ${fmtL(p.prazo)}. Sem problema: conclua assim que puder para manter seu início em ${fmtL(p.inicio)}.</span></p>`:''}</div>`:''}
  ${depois.length?`<section class="stack-s" aria-labelledby="dp-h"><h2 class="t-body" style="font-weight:600" id="dp-h">Depois</h2><div class="steps">${depois.map(x=>`<div class="step"><span class="n">${x.n}</span><span class="sm"><b>${x.t}</b><small>${esc(x.s)}</small></span>${x.lock?`<span class="soft">${ic('lock',16,2)}</span>`:''}</div>`).join('')}</div></section>`:''}
- ${tourCard(p,'Conheça sua equipe antes de chegar')}
- ${p.estado==='assinado'||p.estado==='concluido'?monuCard():''}
- ${expectCard(p)}
+ ${p.assinadoEm||UI.livre?`${tourCard(p,'Conheça sua equipe antes de chegar')}
+ ${monuCard()}
+ ${expectCard(p)}`:`<p class="t-note">Depois da assinatura do contrato, abre aqui o seu onboarding: a equipe, o organograma, a Monumenta por dentro e o que esperamos de você.</p>`}
  ${diaUmCard(p,p.inicio)}
  ${contato(p)}`;
 }
@@ -3202,13 +3290,15 @@ function WZ(m){
    {t:'Conta para pagamento',f:[F('favorecido',m==='PJ'?'Favorecido (a pessoa jurídica)':'Titular da conta'),F('banco','Banco'),F('agencia','Agência',{im:'numeric'}),F('conta','Conta com dígito'),F('pix','Chave Pix',{r:0})],
     help:m==='PJ'?'A conta precisa estar no nome da pessoa jurídica.':''}]},
   {t:'Para fechar',groups:[
+   {t:'Seu minicurrículo',f:[F('miniCV','Minicurrículo para propostas e licitações',{ta:1,ph:'Ex.: Designer gráfica formada pela UnB, com 6 anos de experiência em campanhas para o setor público...'})],
+    help:'Escreva do seu jeito, em 5 a 8 linhas e na terceira pessoa: formação, anos de experiência, clientes ou projetos principais, ferramentas que domina e certificações. A Monumenta usa este texto quando precisa apresentar a equipe em propostas e licitações.'},
    {t:'Contato de emergência',f:[F('emergNome','Nome'),F('emergParentesco','Parentesco'),F('emergCel','Celular',{t:'tel',ph:'(21) 90000-0000',im:'tel'})]},
    {t:'Um pouco sobre você (opcional)',f:[F('camiseta','Tamanho de camiseta',{r:0,sel:'camiseta'}),F('calcado','Número do calçado',{r:0,sel:'calcado'}),F('pets','Tem pets?',{r:0,sel:'pets'}),F('hobby','Um hobby ou interesse',{r:0,ph:'Para o time te conhecer'})]}],
    docs:1,termos:1}];
 }
 function campo(p,f){if(f.so&&(p.form[f.so[0]]||'')!==f.so[1])return '';const v=p.form[f.k]||'',e=UI.err[f.k],id='f-'+f.k;
  const attrs=`id="${id}" data-k="${f.k}" ${f.t?`data-t="${f.t}"`:''} ${e?`aria-invalid="true" aria-describedby="${id}-e"`:''} ${f.r?'aria-required="true"':''}`;
- const inp=f.sel?`<select ${attrs}>${SEL[f.sel].map(o=>`<option value="${o}" ${o===v?'selected':''}>${o||'Escolher'}</option>`).join('')}</select>`
+ const inp=f.ta?`<textarea ${attrs} rows="6" placeholder="${esc(f.ph||'')}">${esc(v)}</textarea>`:f.sel?`<select ${attrs}>${SEL[f.sel].map(o=>`<option value="${o}" ${o===v?'selected':''}>${o||'Escolher'}</option>`).join('')}</select>`
   :`<input ${attrs} type="${f.t==='email'?'email':f.t==='tel'?'tel':'text'}" value="${esc(v)}" placeholder="${esc(f.ph||'')}" ${f.im?`inputmode="${f.im}"`:''} ${f.ac?`autocomplete="${f.ac}"`:'autocomplete="off"'}>`;
  return `<div class="fld ${e?'bad':''}"><label for="${id}">${esc(f.l)}${f.r?'':' <span class="soft">(opcional)</span>'}</label>${inp}${e?`<span class="err" id="${id}-e">${esc(e)}</span>`:''}</div>`}
 function vMeuCad(){
@@ -3491,7 +3581,7 @@ function vPerfil(){
  ${meus.length?`<section class="stack-s" aria-labelledby="pf-h"><h2 class="t-body" style="font-weight:600" id="pf-h">O que falta para terminar</h2><div class="list">${meus.slice(0,4).map(i=>`<button type="button" class="mission" onclick="${i.go}"><span class="mi">${ic(i.ci,18,2)}</span><span class="mt"><b>${esc(i.t)}</b><small>${esc(i.s||'')}</small></span><span class="chev">${ic('chev',16,2.4)}</span></button>`).join('')}</div>
   ${meus.length>4?`<p class="t-note">E mais ${meus.length-4}. Abra cada categoria abaixo para ver tudo.</p>`:''}</section>`:''}
  ${expectCard(o)}
- ${o.tec?`<section class="stack-s" aria-labelledby="pt-h"><div class="sec-h"><h2 class="t-body" style="font-weight:600" id="pt-h">Sua formação técnica</h2><button type="button" class="lnk" onclick="abrirExpect();UI.xs=1;UI.xc=99;tudo()">Atualizar ›</button></div><div class="card">${tecIndicador(o,funcaoDe(o),1)}</div></section>${guiasLista(o,funcaoDe(o))}`:''}
+ ${COMP_ON&&o.tec?`<section class="stack-s" aria-labelledby="pt-h"><div class="sec-h"><h2 class="t-body" style="font-weight:600" id="pt-h">Sua formação técnica</h2><button type="button" class="lnk" onclick="abrirExpect();UI.xs=1;UI.xc=99;tudo()">Atualizar ›</button></div><div class="card">${tecIndicador(o,funcaoDe(o),1)}</div></section>${guiasLista(o,funcaoDe(o))}`:''}
  <section class="stack-s" aria-labelledby="pc-h"><h2 class="t-body" style="font-weight:600" id="pc-h">O que você já cumpriu</h2>${catsHtml(D,prox&&prox.k)}</section>
  ${dados}`;
 }
@@ -3555,5 +3645,36 @@ $('fab').addEventListener('click',abrirTeste);
 Object.values(PRAZOS).forEach(p=>{p.d=p.v});
 try{UI.theme=localStorage.getItem('mt-theme')||'auto'}catch(e){UI.theme='auto'}
 aplicarTema();seed();lerHash();render();ultimo=pacote();if(CANAL)try{CANAL.postMessage({t:'hello'})}catch(e){}
+/* ===== Dados compartilhados: o estado do protótipo fica no Supabase e vale para todo mundo que abre o link ===== */
+const SYNC={tab:'monutrack_estado',id:'principal',ok:null,salvoEm:null,remotoEm:null,t:null,ocupado:false,
+ on:/github\.io$/.test(location.hostname)||/[?&]nuvem=1/.test(location.search)};
+const syncH=x=>nuvH(Object.assign({'Content-Type':'application/json'},x||{}));
+async function syncBaixar(soData){
+ const r=await fetch(`${NUVEM.url}/rest/v1/${SYNC.tab}?id=eq.${SYNC.id}&select=${soData?'atualizado_em':'dados,atualizado_em'}`,{headers:syncH()});
+ if(!r.ok)throw new Error('ler '+r.status);const L=await r.json();return L[0]||null}
+async function syncSalvar(){if(!SYNC.on||SYNC.ok===false)return;clearTimeout(SYNC.t);SYNC.ocupado=true;
+ try{const em=new Date().toISOString(),j=pacote();
+  const r=await fetch(`${NUVEM.url}/rest/v1/${SYNC.tab}?on_conflict=id`,{method:'POST',headers:syncH({Prefer:'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify({id:SYNC.id,dados:j,atualizado_em:em})});
+  if(!r.ok)throw new Error('salvar '+r.status);SYNC.salvoEm=em;SYNC.remotoEm=em;SYNC.ok=true}
+ catch(e){console.error(e);if(SYNC.ok!==false)toast('Não deu para salvar na nuvem agora. Tento de novo na próxima mudança.')}finally{SYNC.ocupado=false}}
+function syncAgendar(){if(!SYNC.on||SYNC.ok===false)return;clearTimeout(SYNC.t);SYNC.pend=true;SYNC.t=setTimeout(()=>{SYNC.pend=false;syncSalvar()},1200)}
+const _enviarS=enviar;enviar=function(){_enviarS();if(!aplicando&&pacote()!==SYNC.ultimoRemoto)syncAgendar()};
+function syncAplicar(row){if(!row||!row.dados)return false;let d;try{d=JSON.parse(row.dados)}catch(e){return false}if(d.ver!==VERSAO_DADOS)return false;
+ SYNC.ultimoRemoto=row.dados;SYNC.remotoEm=row.atualizado_em;aplicar(row.dados);S.clock=new Date();nuvAplicar();if(!editando())repintar();
+ try{if(CANAL)CANAL.postMessage({t:'state',j:pacote()})}catch(e){}return true}
+async function syncIniciar(){if(!SYNC.on)return;
+ try{const row=await syncBaixar();SYNC.ok=true;
+  if(row&&syncAplicar(row)){/* dados de todos */}else{S.clock=new Date();await syncSalvar()}
+  setInterval(syncChecar,8000)}
+ catch(e){SYNC.ok=false;console.error(e);toast('Os dados compartilhados não carregaram. Esta tela está usando dados de exemplo só seus.')}}
+async function syncChecar(){if(SYNC.ocupado||SYNC.pend)return;
+ try{const row=await syncBaixar(true);if(!row||row.atualizado_em===SYNC.remotoEm||row.atualizado_em===SYNC.salvoEm)return;
+  const full=await syncBaixar();if(full&&full.dados!==pacote())syncAplicar(full);else if(full)SYNC.remotoEm=full.atualizado_em}catch(e){}}
+/* Modo teste: mostra de onde vêm os dados e avisa que reiniciar vale para todos */
+const _abTS=abrirTeste;abrirTeste=function(){_abTS();const b=document.querySelector('#layer .sheet-b');if(!b||!SYNC.on)return;
+ b.insertAdjacentHTML('afterbegin',`<div class="card pad-s stack-s"><b style="font-weight:600">${SYNC.ok?'Dados compartilhados':'Dados só desta tela'}</b><span class="t-note">${SYNC.ok?`Tudo o que alguém faz aqui aparece para quem abre o link, em até 10 segundos.${SYNC.salvoEm?' Último salvamento: '+new Date(SYNC.salvoEm).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.':''} "Reiniciar o protótipo" apaga o que todos fizeram.`:'A nuvem não respondeu. O que você fizer aqui não aparece para os outros.'}</span></div>`)};
+const _reinS=reiniciar;reiniciar=function(){if(SYNC.on&&SYNC.ok&&!confirmarReinicio())return;_reinS();if(SYNC.on){S.clock=new Date();nuvAplicar();syncSalvar()}};
+function confirmarReinicio(){return window.confirm('Reiniciar apaga o que todo mundo fez no link compartilhado e volta aos dados de exemplo. Continuar?')}
+syncIniciar();
 </script>
 </body></html>
